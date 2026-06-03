@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1 Activities — Understanding Social Challenges</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-light: #6B6560;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --border: #E2DDD8;
+    --amber: #D4870A;
+    --amber-light: #FFF3CD;
+    --warn: #E07A5F;
+    --warn-light: #FDE8E3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── NAV TABS ── */
+  .tab-nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 14px 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--ink-light);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover { color: var(--accent); }
+
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .tab-btn.done .tab-dot { background: var(--accent); }
+  .tab-btn.active .tab-dot { background: var(--accent); }
+
+  /* ── PANELS ── */
+  .panel { display: none; padding: 32px 24px 60px; max-width: 680px; margin: 0 auto; }
+  .panel.active { display: block; animation: fadeUp 0.4s ease both; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── PANEL HEADER ── */
+  .panel-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  .panel h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .panel-intro {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-light);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    margin-bottom: 20px;
+  }
+
+  /* ── QUESTION BLOCKS ── */
+  .q-block {
+    margin-bottom: 24px;
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .q-block:nth-child(1) { animation-delay: 0.05s; }
+  .q-block:nth-child(2) { animation-delay: 0.10s; }
+  .q-block:nth-child(3) { animation-delay: 0.15s; }
+  .q-block:nth-child(4) { animation-delay: 0.20s; }
+
+  .q-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .q-label .q-icon {
+    font-size: 15px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .q-hint {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+    margin-left: 23px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.08);
+  }
+
+  textarea.tall { min-height: 110px; }
+
+  textarea::placeholder { color: #C5BFB9; }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 16px 0 24px;
+  }
+
+  .callout.amber {
+    background: var(--amber-light);
+    border-color: var(--amber);
+  }
+
+  .callout.warn {
+    background: var(--warn-light);
+    border-color: var(--warn);
+  }
+
+  .callout strong { font-weight: 600; }
+
+  /* ── EXAMPLE BOX ── */
+  .example-box {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 14px 0 20px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .example-box .ex-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+  }
+
+  .example-box .ex-bad { color: var(--warn); margin-bottom: 4px; }
+  .example-box .ex-good { color: var(--accent); }
+
+  /* ── ICEBERG TABLE ── */
+  .iceberg-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .iceberg-row:focus-within { border-color: var(--accent); }
+
+  .iceberg-level {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .level-badge {
+    font-size: 18px;
+  }
+
+  .level-info { flex: 1; }
+
+  .level-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .level-desc {
+    font-size: 11px;
+    color: var(--ink-light);
+    line-height: 1.4;
+  }
+
+  .iceberg-row textarea {
+    min-height: 75px;
+    background: var(--bg);
+    border-color: transparent;
+  }
+
+  .iceberg-row textarea:focus {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+
+  /* ── ATTEMPT CARDS ── */
+  .attempt-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+
+  .attempt-card .attempt-header {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 6px;
+  }
+
+  .attempt-card .attempt-prompt {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+
+  .attempt-card textarea {
+    background: var(--bg);
+    border-color: transparent;
+    min-height: 70px;
+  }
+
+  .attempt-card textarea:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+  }
+
+  /* ── ACTIONS ── */
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #235C40; transform: translateY(-1px); }
+
+  .btn-next { background: var(--ink); color: white; }
+  .btn-next:hover { background: #333; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-light);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--ink-light); color: var(--ink); }
+
+  /* ── SAVED TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--ink);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── PROGRESS ── */
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    width: 100%;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  /* ── COMPLETION ── */
+  .completion-banner {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    display: none;
+    margin-bottom: 24px;
+  }
+
+  .completion-banner.show { display: block; animation: fadeUp 0.4s ease both; }
+
+  .completion-banner h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .completion-banner p {
+    font-size: 13px;
+    color: var(--accent);
+    line-height: 1.5;
+  }
+
+  /* ── FOOTER ── */
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-light);
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar" style="width:25%"></div>
+</div>
+
+<!-- Tab navigation -->
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-0" onclick="showTab(0)">
+    <span class="tab-dot"></span> 1 · Warm-up
+  </button>
+  <button class="tab-btn" id="tab-1" onclick="showTab(1)">
+    <span class="tab-dot"></span> 2 · Iceberg Model
+  </button>
+  <button class="tab-btn" id="tab-2" onclick="showTab(2)">
+    <span class="tab-dot"></span> 3 · How Might We
+  </button>
+  <button class="tab-btn" id="tab-3" onclick="showTab(3)">
+    <span class="tab-dot"></span> 4 · Reflection
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 1 — WARM-UP
+══════════════════════════════════════════ -->
+<div class="panel active" id="panel-0">
+  <div class="panel-tag">Module 1 · Activity 1 of 4</div>
+  <h2>A Problem That Keeps Coming Back</h2>
+  <div class="time-badge">⏱ About 3–5 minutes</div>
+  <p class="panel-intro">Think of one social problem you've noticed in your community, city, or country — something that has existed for a long time despite people trying to fix it. It could be anything: housing, youth unemployment, food waste, loneliness, inequality in education. Choose something that genuinely interests or concerns you. You'll come back to this challenge throughout the whole course.</p>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🔍</span> What is the problem?</div>
+    <div class="q-hint">Describe it in a sentence or two — no need to be precise yet</div>
+    <textarea id="w1" class="tall" placeholder="e.g. Many young people in my city can't find stable employment after finishing university, even with good qualifications…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🔄</span> What solutions have already been tried?</div>
+    <div class="q-hint">Think of anything you've seen, read about, or experienced — programmes, campaigns, policies, community efforts</div>
+    <textarea id="w2" placeholder="e.g. Job fairs, internship schemes, university career centres, government subsidies for employers…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🤔</span> Why do you think they haven't fully worked?</div>
+    <div class="q-hint">Your honest instinct is enough here — there's no wrong answer</div>
+    <textarea id="w3" placeholder="e.g. They focus on skills training but not on the mismatch between what employers want and what universities teach…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout">
+    💡 <strong>Keep this challenge in mind.</strong> You'll use it in every activity across this module — and by the end of the course, you'll have a completely new set of tools for thinking about it.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport(0)">↓ Download my answers</button>
+    <button class="btn btn-next" onclick="showTab(1)">Next activity →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2 — ICEBERG MODEL
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-1">
+  <div class="panel-tag">Module 1 · Activity 2 of 4</div>
+  <h2>The Iceberg Model</h2>
+  <div class="time-badge">⏱ About 8–10 minutes</div>
+  <p class="panel-intro">Most social problems have a visible surface — what we see and talk about every day. But what keeps the problem in place runs much deeper. The Iceberg Model helps you look beyond the symptom to the underlying structures and assumptions. Apply it to your challenge from Activity 1.</p>
+
+  <div class="iceberg-row">
+    <div class="iceberg-level">
+      <span class="level-badge">🔺</span>
+      <div class="level-info">
+        <div class="level-name">Events — what you can see</div>
+        <div class="level-desc">The visible symptom. What people usually talk about when they describe this problem.</div>
+      </div>
+    </div>
+    <textarea id="i1" placeholder="What is visible on the surface? What do you see happening right now?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="iceberg-row">
+    <div class="iceberg-level">
+      <span class="level-badge">📊</span>
+      <div class="level-info">
+        <div class="level-name">Patterns — trends over time</div>
+        <div class="level-desc">Has this problem been getting better or worse? Are there cycles? Over what timeframe?</div>
+      </div>
+    </div>
+    <textarea id="i2" placeholder="What trends exist? Has this been growing, shrinking, shifting?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="iceberg-row">
+    <div class="iceberg-level">
+      <span class="level-badge">⚙️</span>
+      <div class="level-info">
+        <div class="level-name">Structures — systems and institutions</div>
+        <div class="level-desc">Laws, policies, funding systems, infrastructure, organisational practices that shape the situation.</div>
+      </div>
+    </div>
+    <textarea id="i3" placeholder="What systems, institutions, or policies are involved? What rules govern this situation?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="iceberg-row">
+    <div class="iceberg-level">
+      <span class="level-badge">🧠</span>
+      <div class="level-info">
+        <div class="level-name">Mental models — beliefs and assumptions</div>
+        <div class="level-desc">What goes unquestioned? What do people assume about this problem or the people affected?</div>
+      </div>
+    </div>
+    <textarea id="i4" placeholder="What beliefs or assumptions keep this situation in place? What narratives are rarely challenged?" oninput="autosave()"></textarea>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">💭</span> Which level was hardest to identify — and why?</div>
+    <div class="q-hint">The deeper levels are almost always the hardest to see. That's exactly what makes them so powerful in maintaining the status quo.</div>
+    <textarea id="i5" placeholder="What felt unclear or uncomfortable? What would you need to find out more about?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout amber">
+    💡 <strong>You won't have all the answers.</strong> That's completely normal. The goal is to practise looking deeper — not to produce a perfect analysis.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport(1)">↓ Download my answers</button>
+    <button class="btn btn-next" onclick="showTab(2)">Next activity →</button>
+    <button class="btn btn-ghost" onclick="showTab(0)">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3 — HOW MIGHT WE
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-2">
+  <div class="panel-tag">Module 1 · Activity 3 of 4</div>
+  <h2>How Might We...?</h2>
+  <div class="time-badge">⏱ About 5–8 minutes</div>
+  <p class="panel-intro">The way you frame a problem determines the solutions you can imagine. "How Might We" is one of the most widely used tools in social innovation design — a simple sentence structure that opens up possibilities rather than closing them down. Try reframing your challenge using this format. The first attempt is rarely the best.</p>
+
+  <div class="example-box">
+    <div class="ex-label">Example</div>
+    <div class="ex-bad">❌ "The problem is that young people can't find jobs."</div>
+    <div class="ex-good">✅ "How might we connect young people with local businesses so that both can grow together?"</div>
+  </div>
+
+  <div class="callout">
+    <strong>The format:</strong> "How might we <em>_______</em> so that <em>_______</em> can <em>_______</em>?"
+  </div>
+
+  <div class="attempt-card">
+    <div class="attempt-header">Attempt 1 — Your first try</div>
+    <div class="attempt-prompt">"How might we…"</div>
+    <textarea id="h1" placeholder="How might we _______ so that _______ can _______?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="attempt-card">
+    <div class="attempt-header">Attempt 2 — A different angle</div>
+    <div class="attempt-prompt">What if you focused on a different group, or a different part of the problem?</div>
+    <textarea id="h2" placeholder="How might we _______ so that _______ can _______?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="attempt-card">
+    <div class="attempt-header">Attempt 3 — Push it further</div>
+    <div class="attempt-prompt">What's the most ambitious version of your reframe?</div>
+    <textarea id="h3" placeholder="How might we _______ so that _______ can _______?" oninput="autosave()"></textarea>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">⭐</span> Which version feels most promising — and why?</div>
+    <div class="q-hint">What makes it more open or more useful than the others?</div>
+    <textarea id="h4" placeholder="I prefer attempt ___ because…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout amber">
+    💡 <strong>Keep your best reframe somewhere visible.</strong> You'll come back to it in Module 4 when you start generating ideas.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport(2)">↓ Download my answers</button>
+    <button class="btn btn-next" onclick="showTab(3)">Next activity →</button>
+    <button class="btn btn-ghost" onclick="showTab(1)">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 4 — REFLECTION
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-3">
+  <div class="panel-tag">Module 1 · Activity 4 of 4</div>
+  <h2>Before You Move On</h2>
+  <div class="time-badge">⏱ About 5 minutes</div>
+  <p class="panel-intro">Honest reflection is one of the most powerful learning tools there is. These questions have no right answers — they're designed to help you notice your own thinking before you move to Module 2.</p>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🧊</span> Which level of the Iceberg Model felt hardest to see — structures or mental models?</div>
+    <div class="q-hint">What made it difficult? What would you need to find out more about?</div>
+    <textarea id="r1" class="tall" placeholder="I found it hardest to see… because…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🔀</span> Did your "How Might We" reframe change how you think about possible solutions?</div>
+    <div class="q-hint">Does it open up new directions, or does it still feel too narrow?</div>
+    <textarea id="r2" class="tall" placeholder="Reframing made me think differently about… / I still feel stuck on…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🧑‍🤝‍🧑</span> Who experiences this challenge most directly — and have you ever asked them how they see it?</div>
+    <div class="q-hint">This doesn't need to be a big answer. Just notice whether the most affected people are part of your thinking yet.</div>
+    <textarea id="r3" class="tall" placeholder="The people most affected are… I have/haven't spoken to them because…" oninput="autosave()"></textarea>
+  </div>
+
+  <hr class="section-divider">
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">💬</span> Optional — Peer prompt</div>
+    <div class="q-hint">Share your "How Might We" question with someone and ask: "Does this open up possibilities — or does it still feel too narrow?" Note what they said below.</div>
+    <textarea id="r4" placeholder="Their reaction, a question they raised, or something that surprised you… (optional)" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="completion-banner" id="completionBanner">
+    <h3>✓ Module 1 complete</h3>
+    <p>You've explored a social challenge through the Iceberg Model, reframed it as a "How Might We" question, and reflected on your thinking. Download your responses below before moving to Module 2.</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport(3)">↓ Download all my answers</button>
+    <button class="btn btn-ghost" onclick="showTab(2)">← Back</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Answers saved</div>
+
+<div class="footer-note">
+  Your responses are stored only in this browser session and are never shared. Download your answers to keep them.
+  <br>Module 1 · Designing Social Impact · ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq
+</div>
+
+<script>
+  // ── STATE ──
+  const fields = {
+    0: ['w1','w2','w3'],
+    1: ['i1','i2','i3','i4','i5'],
+    2: ['h1','h2','h3','h4'],
+    3: ['r1','r2','r3','r4']
+  };
+
+  const labels = {
+    w1: 'What is the problem?',
+    w2: 'What solutions have already been tried?',
+    w3: 'Why do you think they haven\'t fully worked?',
+    i1: '🔺 Events — what you can see',
+    i2: '📊 Patterns — trends over time',
+    i3: '⚙️ Structures — systems and institutions',
+    i4: '🧠 Mental models — beliefs and assumptions',
+    i5: 'Which level was hardest to identify — and why?',
+    h1: 'How Might We — Attempt 1',
+    h2: 'How Might We — Attempt 2',
+    h3: 'How Might We — Attempt 3',
+    h4: 'Which version feels most promising — and why?',
+    r1: 'Which level of the Iceberg felt hardest to see?',
+    r2: 'Did the How Might We reframe change your thinking?',
+    r3: 'Who experiences this challenge most directly?',
+    r4: 'Peer prompt — what did they say? (optional)'
+  };
+
+  const panelTitles = [
+    'Activity 1: A Problem That Keeps Coming Back',
+    'Activity 2: The Iceberg Model',
+    'Activity 3: How Might We?',
+    'Activity 4: Reflection'
+  ];
+
+  let currentTab = 0;
+  let saveTimer = null;
+  const done = [false, false, false, false];
+
+  // ── TABS ──
+  function showTab(i) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + i).classList.add('active');
+    document.getElementById('tab-' + i).classList.add('active');
+    currentTab = i;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── AUTOSAVE ──
+  function autosave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      showToast('✓ Draft saved');
+      checkCompletion();
+    }, 800);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    const pct = ((currentTab + 1) / 4) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+  }
+
+  // ── COMPLETION CHECK ──
+  function checkCompletion() {
+    // Check if all required fields in current panel have content
+    const req = { 0: ['w1'], 1: ['i1'], 2: ['h1'], 3: ['r1','r2','r3'] };
+    const allFilled = req[currentTab].every(id => document.getElementById(id).value.trim().length > 0);
+    if (allFilled) {
+      done[currentTab] = true;
+      document.getElementById('tab-' + currentTab).classList.add('done');
+    }
+    if (currentTab === 3 && done[3]) {
+      document.getElementById('completionBanner').classList.add('show');
+    }
+  }
+
+  // ── EXPORT ──
+  function saveAndExport(tabIdx) {
+    const allFieldIds = Object.values(fields).flat();
+    let hasAny = allFieldIds.some(id => document.getElementById(id)?.value.trim());
+
+    if (!hasAny) {
+      showToast('Nothing to download yet — fill in some answers first');
+      return;
+    }
+
+    const date = new Date().toLocaleDateString('en-GB');
+    let text = 'MODULE 1 ACTIVITIES — Understanding Social Challenges\n';
+    text += 'Designing Social Impact · ERUA Social Entrepreneurship e-Course\n';
+    text += `Date: ${date}\n\n`;
+    text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+
+    Object.entries(fields).forEach(([tab, ids]) => {
+      text += `${panelTitles[tab].toUpperCase()}\n`;
+      text += '─────────────────────────────────────────\n';
+      ids.forEach(id => {
+        const val = document.getElementById(id)?.value.trim();
+        if (val) {
+          text += `\n${labels[id]}:\n${val}\n`;
+        }
+      });
+      text += '\n';
+    });
+
+    text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+    text += 'Prepared as part of the ERUA Social Entrepreneurship e-Course\n';
+    text += 'Module 3 — Designing Social Impact: Co-creating a Better Future\n';
+
+    try {
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Module1-Activities-${date.replace(/\//g,'-')}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch(e) {
+      const encoded = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
+      const a = document.createElement('a');
+      a.href = encoded;
+      a.download = `Module1-Activities-${date.replace(/\//g,'-')}.txt`;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    showToast('✓ Downloaded successfully');
+  }
+</script>
+</body>
+</html>
