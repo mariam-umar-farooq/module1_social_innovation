@@ -772,7 +772,7 @@
     let hasAny = allFieldIds.some(id => document.getElementById(id)?.value.trim());
 
     if (!hasAny) {
-      showToast('Nothing to download yet — fill in some answers first');
+      showToast('Nothing to save yet — fill in some answers first');
       return;
     }
 
@@ -798,28 +798,127 @@
     text += 'Prepared as part of the ERUA Social Entrepreneurship e-Course\n';
     text += 'Module 3 — Designing Social Impact: Co-creating a Better Future\n';
 
+    // Primary method: open in new tab as a webpage the user can
+    // print or save (Ctrl+S) — works reliably inside Notion iframes
+    // where blob URLs and data URIs are blocked by sandbox policy
+    const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Module 1 — My Answers</title>
+<style>
+  body { font-family: Georgia, serif; max-width: 680px; margin: 40px auto;
+         padding: 0 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .meta { color: #888; font-size: 13px; margin-bottom: 32px; }
+  h2 { font-size: 15px; text-transform: uppercase; letter-spacing: .08em;
+       color: #2D6A4F; margin: 28px 0 4px; border-top: 1px solid #eee; padding-top: 16px; }
+  .q { font-weight: bold; font-size: 14px; margin: 16px 0 4px; }
+  .a { font-size: 14px; color: #333; white-space: pre-wrap; }
+  .footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #eee;
+            font-size: 12px; color: #aaa; }
+  @media print { body { margin: 20px; } }
+</style>
+</head><body>
+<h1>Module 1 — My Answers</h1>
+<div class="meta">Designing Social Impact · ERUA Social Entrepreneurship e-Course · ${date}</div>`;
+
+    const sectionHtml = Object.entries(fields).map(([tab, ids]) => {
+      const items = ids.map(id => {
+        const val = document.getElementById(id)?.value.trim();
+        if (!val) return '';
+        return `<div class="q">${labels[id]}</div><div class="a">${val.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+      }).filter(Boolean).join('');
+      if (!items) return '';
+      return `<h2>${panelTitles[tab]}</h2>${items}`;
+    }).join('');
+
+    const fullHtml = html + sectionHtml +
+      `<div class="footer">ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6</div>
+</body></html>`;
+
+    // Try blob → new tab first (works on GitHub Pages direct open)
+    let opened = false;
     try {
-      const blob = new Blob([text], { type: 'text/plain' });
+      const blob = new Blob([fullHtml], { type: 'text/html' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Module1-Activities-${date.replace(/\//g,'-')}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-    } catch(e) {
-      const encoded = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text);
-      const a = document.createElement('a');
-      a.href = encoded;
-      a.download = `Module1-Activities-${date.replace(/\//g,'-')}.txt`;
-      a.target = '_blank';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      const win = window.open(url, '_blank');
+      if (win) {
+        opened = true;
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        showToast('✓ Opened in new tab — use Ctrl+P to print or save');
+      }
+    } catch(e) {}
+
+    // Fallback: data URI new tab
+    if (!opened) {
+      try {
+        const encoded = 'data:text/html;charset=utf-8,' + encodeURIComponent(fullHtml);
+        const win = window.open(encoded, '_blank');
+        if (win) {
+          opened = true;
+          showToast('✓ Opened in new tab — use Ctrl+P to print or save');
+        }
+      } catch(e) {}
     }
 
-    showToast('✓ Downloaded successfully');
+    // Last resort: show answers in a modal overlay on the page itself
+    if (!opened) {
+      showAnswerOverlay(text);
+    }
+  }
+
+  // ── OVERLAY FALLBACK ──
+  function showAnswerOverlay(text) {
+    // Remove existing overlay if any
+    const existing = document.getElementById('answerOverlay');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'answerOverlay';
+    overlay.style.cssText = `
+      position:fixed; inset:0; background:rgba(0,0,0,0.7);
+      display:flex; align-items:center; justify-content:center;
+      z-index:9999; padding:20px;
+    `;
+
+    const box = document.createElement('div');
+    box.style.cssText = `
+      background:white; border-radius:12px; padding:24px;
+      max-width:600px; width:100%; max-height:80vh;
+      overflow-y:auto; position:relative;
+    `;
+
+    box.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <strong style="font-size:15px">Your answers</strong>
+        <button onclick="document.getElementById('answerOverlay').remove()"
+          style="background:none;border:none;font-size:20px;cursor:pointer;color:#888">✕</button>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:12px">
+        Select all the text below (Ctrl+A), copy it (Ctrl+C), then paste into a document to save.
+      </p>
+      <textarea readonly style="width:100%;height:320px;font-family:monospace;font-size:12px;
+        line-height:1.6;border:1px solid #ddd;border-radius:8px;padding:12px;
+        resize:none;color:#333">${text}</textarea>
+      <button onclick="copyOverlayText()" style="margin-top:12px;background:#2D6A4F;color:white;
+        border:none;border-radius:8px;padding:10px 18px;font-size:13px;
+        font-weight:600;cursor:pointer;width:100%">Copy all to clipboard</button>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    showToast('✓ Your answers are ready to copy');
+  }
+
+  function copyOverlayText() {
+    const ta = document.querySelector('#answerOverlay textarea');
+    if (!ta) return;
+    ta.select();
+    try {
+      navigator.clipboard.writeText(ta.value).then(() => showToast('✓ Copied to clipboard'));
+    } catch(e) {
+      document.execCommand('copy');
+      showToast('✓ Copied to clipboard');
+    }
   }
 </script>
 </body>
