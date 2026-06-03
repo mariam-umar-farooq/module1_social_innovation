@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2 Activities — Introduction to Social Innovation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-light: #6B6560;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --border: #E2DDD8;
+    --amber: #D4870A;
+    --amber-light: #FFF3CD;
+    --warn: #E07A5F;
+    --warn-light: #FDE8E3;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .tab-nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 14px 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--ink-light);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover { color: var(--accent); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .tab-btn.done .tab-dot,
+  .tab-btn.active .tab-dot { background: var(--accent); }
+
+  .panel { display: none; padding: 32px 24px 60px; max-width: 680px; margin: 0 auto; }
+  .panel.active { display: block; animation: fadeUp 0.4s ease both; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  .panel h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .panel-intro {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-light);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    margin-bottom: 20px;
+  }
+
+  .q-block { margin-bottom: 22px; }
+
+  .q-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .q-label .q-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+
+  .q-hint {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+    margin-left: 23px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,106,79,0.08);
+  }
+
+  textarea::placeholder { color: #C5BFB9; }
+
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 16px 0 24px;
+  }
+
+  .callout.amber { background: var(--amber-light); border-color: var(--amber); }
+  .callout strong { font-weight: 600; }
+
+  /* Case study cards */
+  .case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .case-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .case-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .case-card.selected { border-color: var(--accent); background: #FAFFFE; }
+  .case-card.selected::after { content: '✓ Selected'; display: block; font-size: 11px; font-weight: 600; color: var(--accent); margin-top: 8px; }
+
+  .case-emoji { font-size: 22px; margin-bottom: 6px; }
+  .case-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .case-tagline { font-size: 11px; color: var(--ink-light); line-height: 1.4; }
+
+  /* Idea sketch rows */
+  .idea-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .idea-row:focus-within { border-color: var(--accent); }
+
+  .idea-row-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-light);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  .idea-row textarea {
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+    min-height: 60px;
+  }
+
+  .idea-row textarea:focus {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  /* Warm-up list */
+  .warmup-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+
+  .warmup-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .warmup-item:focus-within { border-color: var(--accent); }
+
+  .warmup-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--accent);
+    min-width: 24px;
+    margin-top: 1px;
+  }
+
+  .warmup-item textarea {
+    border: none;
+    background: transparent;
+    padding: 0;
+    min-height: 40px;
+    resize: none;
+  }
+
+  .warmup-item textarea:focus { border: none; box-shadow: none; }
+
+  /* Actions */
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #235C40; transform: translateY(-1px); }
+  .btn-next { background: var(--ink); color: white; }
+  .btn-next:hover { background: #333; }
+  .btn-ghost { background: transparent; color: var(--ink-light); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--ink-light); color: var(--ink); }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--ink);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .progress-bar-wrap { height: 3px; background: var(--border); width: 100%; }
+  .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+  .completion-banner {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+    display: none;
+    margin-bottom: 24px;
+  }
+
+  .completion-banner.show { display: block; animation: fadeUp 0.4s ease both; }
+
+  .completion-banner h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .completion-banner p { font-size: 13px; color: var(--accent); line-height: 1.5; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-light);
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar" style="width:33%"></div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-0" onclick="showTab(0)">
+    <span class="tab-dot"></span> 1 · Warm-up
+  </button>
+  <button class="tab-btn" id="tab-1" onclick="showTab(1)">
+    <span class="tab-dot"></span> 2 · Case Study
+  </button>
+  <button class="tab-btn" id="tab-2" onclick="showTab(2)">
+    <span class="tab-dot"></span> 3 · Your Idea & Reflection
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 1 — WARM-UP
+══════════════════════════════════════════ -->
+<div class="panel active" id="panel-0">
+  <div class="panel-tag">Module 2 · Activity 1 of 3</div>
+  <h2>Have You Already Innovated?</h2>
+  <div class="time-badge">⏱ About 3–5 minutes</div>
+  <p class="panel-intro">Before you read about social innovation, think about whether you've already experienced it. It doesn't have to be big — a creative solution to a problem affecting others, in any context, counts.</p>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">💡</span> Think of a time when someone found a new, creative way to solve a problem that was affecting other people.</div>
+    <div class="q-hint">It could be something in your neighbourhood, university, family, or workplace — anything counts</div>
+  </div>
+
+  <div class="warmup-list">
+    <div class="warmup-item">
+      <div class="warmup-num">1</div>
+      <textarea id="w1" placeholder="What was the problem?" oninput="autosave()"></textarea>
+    </div>
+    <div class="warmup-item">
+      <div class="warmup-num">2</div>
+      <textarea id="w2" placeholder="What was the new or creative approach?" oninput="autosave()"></textarea>
+    </div>
+    <div class="warmup-item">
+      <div class="warmup-num">3</div>
+      <textarea id="w3" placeholder="Did it work — and why or why not?" oninput="autosave()"></textarea>
+    </div>
+  </div>
+
+  <div class="callout">
+    💡 <strong>Chances are, you've already experienced social innovation</strong> — even if you didn't call it that. The goal here is to start with what you already know before adding any new frameworks.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save my answers</button>
+    <button class="btn btn-next" onclick="showTab(1)">Next activity →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2 — CASE STUDY
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-1">
+  <div class="panel-tag">Module 2 · Activity 2 of 3</div>
+  <h2>Spot the Innovation</h2>
+  <div class="time-badge">⏱ About 8–10 minutes</div>
+  <p class="panel-intro">You've just read about three real-world social innovations. Pick one that interests you most and analyse what makes it genuinely "social" — using the questions below.</p>
+
+  <div style="margin-bottom: 6px; font-size: 13px; font-weight: 600; color: var(--ink);">Which case are you analysing?</div>
+  <div style="font-size: 12px; color: var(--ink-light); margin-bottom: 14px; font-style: italic;">Click to select one</div>
+
+  <div class="case-grid">
+    <div class="case-card" id="case-rebread" onclick="selectCase('rebread')">
+      <div class="case-emoji">🍞</div>
+      <div class="case-name">Rebread</div>
+      <div class="case-tagline">Turning unsold bread into new products — Poland</div>
+    </div>
+    <div class="case-card" id="case-hybrid" onclick="selectCase('hybrid')">
+      <div class="case-emoji">🏪</div>
+      <div class="case-name">Hybrid Markets</div>
+      <div class="case-tagline">Reimagining city markets as community centres — Poland</div>
+    </div>
+    <div class="case-card" id="case-proximity" onclick="selectCase('proximity')">
+      <div class="case-emoji">🌍</div>
+      <div class="case-name">Proximity Designs</div>
+      <div class="case-tagline">Co-designing tools with rural farmers — Myanmar</div>
+    </div>
+  </div>
+
+  <input type="hidden" id="selectedCase" value="">
+
+  <hr class="section-divider">
+
+  <div class="idea-row">
+    <div class="idea-row-label">What was the old way of doing things?</div>
+    <textarea id="c1" placeholder="How was this problem being addressed (or ignored) before this initiative?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">What is the new approach?</div>
+    <textarea id="c2" placeholder="What did this initiative do differently?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">Who benefits — and how?</div>
+    <textarea id="c3" placeholder="Who gains from this innovation — directly and indirectly?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">What makes it "social" rather than just a business?</div>
+    <textarea id="c4" placeholder="What separates this from a purely commercial venture?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout amber">
+    💡 <strong>No perfect answers here.</strong> The goal is to practise seeing what makes something social — not to produce a polished analysis.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save my answers</button>
+    <button class="btn btn-next" onclick="showTab(2)">Next activity →</button>
+    <button class="btn btn-ghost" onclick="showTab(0)">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3 — IDEA SKETCH + REFLECTION
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-2">
+  <div class="panel-tag">Module 2 · Activity 3 of 3</div>
+  <h2>Your First Social Innovation Idea</h2>
+  <div class="time-badge">⏱ About 10–12 minutes</div>
+  <p class="panel-intro">Go back to the social challenge you identified in Module 1. Using what you've just learned, sketch your first rough idea for a social innovation response. This is not a plan — it's a creative first step. You'll refine it in the modules ahead.</p>
+
+  <div class="idea-row">
+    <div class="idea-row-label">What is the social need you're addressing?</div>
+    <textarea id="s1" placeholder="Which aspect of your Module 1 challenge are you focusing on?" oninput="autosave(); checkCompletion()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">What is your new approach or idea?</div>
+    <textarea id="s2" placeholder="Describe your idea in 2–3 sentences — even if it's rough or incomplete" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">Who would benefit — and how?</div>
+    <textarea id="s3" placeholder="Who gains from this? Think broadly — direct and indirect beneficiaries" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">Who would you need to work with?</div>
+    <textarea id="s4" placeholder="Which people, organisations, or communities would need to be involved?" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="idea-row">
+    <div class="idea-row-label">How is this different from what already exists?</div>
+    <textarea id="s5" placeholder="What gap does this fill that current solutions don't?" oninput="autosave()"></textarea>
+  </div>
+
+  <hr class="section-divider">
+
+  <div style="font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 16px;">🔍 Reflection</div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🤔</span> Does your idea feel "big enough" to count as social innovation — and why do you think that?</div>
+    <div class="q-hint">Most first ideas feel too small. That's normal. Notice the instinct — and question it.</div>
+    <textarea id="r1" placeholder="My idea feels… because…" oninput="autosave(); checkCompletion()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🧠</span> What assumptions are you making about who has the knowledge to solve this problem?</div>
+    <div class="q-hint">Are you assuming the solution comes from experts, outsiders, or the community itself?</div>
+    <textarea id="r2" placeholder="I'm assuming… which might mean I'm overlooking…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout">
+    💬 <strong>Peer prompt:</strong> Share your rough idea with one other person and ask: <em>"What's one thing I might be missing?"</em> Note their response below if you'd like.
+  </div>
+
+  <div class="q-block">
+    <textarea id="r3" placeholder="What did they say? (optional)" oninput="autosave()" style="min-height: 70px;"></textarea>
+  </div>
+
+  <div class="completion-banner" id="completionBanner">
+    <h3>✓ Module 2 complete</h3>
+    <p>You've explored what social innovation is, analysed a real case, and sketched your first idea. Download your responses and carry your idea into Module 3.</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save all my answers</button>
+    <button class="btn btn-ghost" onclick="showTab(1)">← Back</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Draft saved</div>
+
+<div class="footer-note">
+  Your responses are stored only in this browser session and are never shared. Save your answers using the button above.
+  <br>Module 2 · Designing Social Impact · ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq
+</div>
+
+<script>
+  const fields = {
+    0: ['w1','w2','w3'],
+    1: ['c1','c2','c3','c4'],
+    2: ['s1','s2','s3','s4','s5','r1','r2','r3']
+  };
+
+  const labels = {
+    w1: 'What was the problem?',
+    w2: 'What was the new or creative approach?',
+    w3: 'Did it work — and why or why not?',
+    c1: 'What was the old way of doing things?',
+    c2: 'What is the new approach?',
+    c3: 'Who benefits — and how?',
+    c4: 'What makes it "social" rather than just a business?',
+    s1: 'What is the social need you\'re addressing?',
+    s2: 'What is your new approach or idea?',
+    s3: 'Who would benefit — and how?',
+    s4: 'Who would you need to work with?',
+    s5: 'How is this different from what already exists?',
+    r1: 'Does your idea feel "big enough" — why?',
+    r2: 'What assumptions are you making about who has the knowledge to solve this?',
+    r3: 'Peer prompt — what did they say? (optional)'
+  };
+
+  const panelTitles = [
+    'Activity 1: Have You Already Innovated?',
+    'Activity 2: Spot the Innovation',
+    'Activity 3: Your First Social Innovation Idea & Reflection'
+  ];
+
+  let currentTab = 0;
+  let saveTimer = null;
+  let selectedCaseLabel = '';
+
+  function showTab(i) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + i).classList.add('active');
+    document.getElementById('tab-' + i).classList.add('active');
+    currentTab = i;
+    const pct = ((i + 1) / 3) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function selectCase(name) {
+    document.querySelectorAll('.case-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('case-' + name).classList.add('selected');
+    document.getElementById('selectedCase').value = name;
+    const nameMap = { rebread: 'Rebread', hybrid: 'Hybrid Markets', proximity: 'Proximity Designs' };
+    selectedCaseLabel = nameMap[name] || name;
+  }
+
+  function autosave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => showToast('✓ Draft saved'), 800);
+  }
+
+  function checkCompletion() {
+    const s1 = document.getElementById('s1')?.value.trim();
+    const r1 = document.getElementById('r1')?.value.trim();
+    if (s1 && r1) {
+      document.getElementById('completionBanner').classList.add('show');
+      document.getElementById('tab-2').classList.add('done');
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function saveAndExport() {
+    const allIds = Object.values(fields).flat();
+    const hasAny = allIds.some(id => document.getElementById(id)?.value.trim());
+    if (!hasAny) { showToast('Fill in some answers first'); return; }
+
+    const date = new Date().toLocaleDateString('en-GB');
+
+    let text = 'MODULE 2 ACTIVITIES — Introduction to Social Innovation\n';
+    text += 'Designing Social Impact · ERUA Social Entrepreneurship e-Course\n';
+    text += `Date: ${date}\n\n`;
+    text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n';
+
+    if (selectedCaseLabel) {
+      text += `Case study analysed: ${selectedCaseLabel}\n\n`;
+    }
+
+    Object.entries(fields).forEach(([tab, ids]) => {
+      text += `${panelTitles[tab].toUpperCase()}\n`;
+      text += '─────────────────────────────────────────\n';
+      ids.forEach(id => {
+        const val = document.getElementById(id)?.value.trim();
+        if (val) text += `\n${labels[id]}:\n${val}\n`;
+      });
+      text += '\n';
+    });
+
+    text += '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n';
+    text += 'Prepared as part of the ERUA Social Entrepreneurship e-Course\n';
+    text += 'Module 3 — Designing Social Impact: Co-creating a Better Future\n';
+
+    const html = buildHtml(date, text);
+    openInNewTab(html);
+  }
+
+  function buildHtml(date, text) {
+    const allIds = Object.values(fields).flat();
+    let sections = '';
+
+    Object.entries(fields).forEach(([tab, ids]) => {
+      const items = ids.map(id => {
+        const val = document.getElementById(id)?.value.trim();
+        if (!val) return '';
+        return `<div class="q">${labels[id]}</div>
+                <div class="a">${val.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`;
+      }).filter(Boolean).join('');
+      if (!items) return;
+      sections += `<h2>${panelTitles[tab]}</h2>${items}`;
+    });
+
+    if (selectedCaseLabel) {
+      sections = `<div class="case-note">Case study analysed: <strong>${selectedCaseLabel}</strong></div>` + sections;
+    }
+
+    return `<!DOCTYPE html><html><head><meta charset="UTF-8">
+<title>Module 2 — My Answers</title>
+<style>
+  body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7}
+  h1{font-size:22px;margin-bottom:4px}
+  .meta{color:#888;font-size:13px;margin-bottom:32px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:#2D6A4F;
+     margin:28px 0 4px;border-top:1px solid #eee;padding-top:16px}
+  .q{font-weight:bold;font-size:14px;margin:16px 0 4px}
+  .a{font-size:14px;color:#333;white-space:pre-wrap}
+  .case-note{background:#D8F3DC;border-radius:6px;padding:10px 14px;
+             font-size:13px;margin-bottom:20px}
+  .footer{margin-top:48px;padding-top:16px;border-top:1px solid #eee;font-size:12px;color:#aaa}
+  @media print{body{margin:20px}}
+</style></head><body>
+<h1>Module 2 — My Answers</h1>
+<div class="meta">Designing Social Impact · ERUA Social Entrepreneurship e-Course · ${date}</div>
+${sections}
+<div class="footer">ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6</div>
+</body></html>`;
+  }
+
+  function openInNewTab(html) {
+    let opened = false;
+    try {
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (win) { opened = true; setTimeout(() => URL.revokeObjectURL(url), 3000); }
+    } catch(e) {}
+
+    if (!opened) {
+      try {
+        const win = window.open('data:text/html;charset=utf-8,' + encodeURIComponent(html), '_blank');
+        if (win) opened = true;
+      } catch(e) {}
+    }
+
+    if (opened) {
+      showToast('✓ Opened in new tab — print or save as PDF');
+    } else {
+      showAnswerOverlay(buildPlainText());
+    }
+  }
+
+  function buildPlainText() {
+    const date = new Date().toLocaleDateString('en-GB');
+    let text = 'MODULE 2 ACTIVITIES\n' + `Date: ${date}\n\n`;
+    if (selectedCaseLabel) text += `Case: ${selectedCaseLabel}\n\n`;
+    Object.entries(fields).forEach(([tab, ids]) => {
+      text += panelTitles[tab].toUpperCase() + '\n---\n';
+      ids.forEach(id => {
+        const val = document.getElementById(id)?.value.trim();
+        if (val) text += `\n${labels[id]}:\n${val}\n`;
+      });
+      text += '\n';
+    });
+    return text;
+  }
+
+  function showAnswerOverlay(text) {
+    const existing = document.getElementById('answerOverlay');
+    if (existing) existing.remove();
+    const overlay = document.createElement('div');
+    overlay.id = 'answerOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
+    const box = document.createElement('div');
+    box.style.cssText = 'background:white;border-radius:12px;padding:24px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;position:relative';
+    box.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <strong style="font-size:15px">Your answers</strong>
+        <button onclick="document.getElementById('answerOverlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888">✕</button>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:12px">Select all and copy (Ctrl+A, Ctrl+C) to save your responses.</p>
+      <textarea readonly style="width:100%;height:300px;font-family:monospace;font-size:12px;line-height:1.6;border:1px solid #ddd;border-radius:8px;padding:12px;resize:none">${text}</textarea>
+      <button onclick="copyOverlay()" style="margin-top:12px;background:#2D6A4F;color:white;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Copy to clipboard</button>`;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    showToast('✓ Your answers are ready to copy');
+  }
+
+  function copyOverlay() {
+    const ta = document.querySelector('#answerOverlay textarea');
+    if (!ta) return;
+    ta.select();
+    try { navigator.clipboard.writeText(ta.value).then(() => showToast('✓ Copied')); }
+    catch(e) { document.execCommand('copy'); showToast('✓ Copied'); }
+  }
+</script>
+</body>
+</html>
