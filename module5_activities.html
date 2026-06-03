@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 5 Activities — Co-creation & Teamwork</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F4EF;--surface:#fff;--ink:#1A1A1A;--ink-light:#6B6560;--accent:#2D6A4F;--accent-light:#D8F3DC;--border:#E2DDD8;--amber:#D4870A;--amber-light:#FFF3CD;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--ink);min-height:100vh;}
+.tab-nav{display:flex;background:var(--surface);border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none;position:sticky;top:0;z-index:100;}
+.tab-nav::-webkit-scrollbar{display:none;}
+.tab-btn{font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:14px 18px;border:none;background:none;cursor:pointer;color:var(--ink-light);white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.tab-btn:hover{color:var(--accent);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-dot{width:7px;height:7px;border-radius:50%;background:var(--border);flex-shrink:0;transition:background .2s;}
+.tab-btn.done .tab-dot,.tab-btn.active .tab-dot{background:var(--accent);}
+.panel{display:none;padding:32px 24px 60px;max-width:680px;margin:0 auto;}
+.panel.active{display:block;animation:fadeUp .4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.panel-tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);background:var(--accent-light);padding:4px 10px;border-radius:4px;margin-bottom:14px;}
+.panel h2{font-family:'DM Serif Display',serif;font-size:clamp(22px,4vw,32px);line-height:1.2;margin-bottom:10px;}
+.panel-intro{font-size:14px;color:var(--ink-light);line-height:1.65;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+.time-badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--ink-light);background:var(--bg);border:1px solid var(--border);border-radius:99px;padding:3px 10px;margin-bottom:20px;}
+.q-block{margin-bottom:22px;}
+.q-label{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px;line-height:1.4;}
+.q-hint{font-size:12px;color:var(--ink-light);margin-bottom:8px;line-height:1.5;font-style:italic;}
+textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;color:var(--ink);background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;resize:vertical;min-height:90px;outline:none;transition:border-color .2s,box-shadow .2s;}
+textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,106,79,.08);}
+textarea::placeholder{color:#C5BFB9;}
+.section-divider{border:none;border-top:1px solid var(--border);margin:28px 0;}
+.callout{background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;line-height:1.6;color:var(--ink);margin:16px 0 24px;}
+.callout.amber{background:var(--amber-light);border-color:var(--amber);}
+.callout strong{font-weight:600;}
+.plan-row{background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:12px;transition:border-color .2s;}
+.plan-row:focus-within{border-color:var(--accent);}
+.plan-label{font-size:12px;font-weight:600;color:var(--ink-light);margin-bottom:6px;letter-spacing:.04em;}
+.plan-row textarea{background:transparent;border-color:transparent;min-height:65px;}
+.plan-row textarea:focus{border-color:transparent;box-shadow:none;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px;padding-top:24px;border-top:1px solid var(--border);}
+.btn{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;padding:11px 20px;border-radius:9px;border:none;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--accent);color:white;}
+.btn-primary:hover{background:#235C40;transform:translateY(-1px);}
+.btn-next{background:var(--ink);color:white;}
+.btn-next:hover{background:#333;}
+.btn-ghost{background:transparent;color:var(--ink-light);border:1.5px solid var(--border);}
+.btn-ghost:hover{border-color:var(--ink-light);color:var(--ink);}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--ink);color:white;font-size:13px;font-weight:500;padding:10px 20px;border-radius:99px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.progress-bar-wrap{height:3px;background:var(--border);width:100%;}
+.progress-bar-fill{height:100%;background:var(--accent);transition:width .4s ease;}
+.completion-banner{background:var(--accent-light);border:1.5px solid var(--accent);border-radius:12px;padding:20px 24px;text-align:center;display:none;margin-bottom:24px;}
+.completion-banner.show{display:block;animation:fadeUp .4s ease both;}
+.completion-banner h3{font-family:'DM Serif Display',serif;font-size:22px;color:var(--accent);margin-bottom:6px;}
+.completion-banner p{font-size:13px;color:var(--accent);line-height:1.5;}
+.footer-note{text-align:center;font-size:11px;color:var(--ink-light);padding:20px 24px;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+<div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:33%"></div></div>
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-0" onclick="showTab(0)"><span class="tab-dot"></span> 1 · Warm-up</button>
+  <button class="tab-btn" id="tab-1" onclick="showTab(1)"><span class="tab-dot"></span> 2 · Co-creation Check</button>
+  <button class="tab-btn" id="tab-2" onclick="showTab(2)"><span class="tab-dot"></span> 3 · Conversation Plan & Reflect</button>
+</div>
+
+<div class="panel active" id="panel-0">
+  <div class="panel-tag">Module 5 · Activity 1 of 3</div>
+  <h2>Designed For or Designed With?</h2>
+  <div class="time-badge">⏱ About 5 minutes</div>
+  <p class="panel-intro">Before diving into co-creation theory, reflect on two experiences you've already had — one where something was designed without community input, and one where it was designed together.</p>
+  <div class="q-block">
+    <div class="q-label">Think of something — a product, service, or programme — that was clearly designed <em>for</em> a group of people without much input from them. What went wrong?</div>
+    <textarea id="w1" placeholder="Example + what went wrong…" oninput="autosave()"></textarea>
+  </div>
+  <div class="q-block">
+    <div class="q-label">Now think of something designed <em>with</em> people — where their input shaped the final result. What was different?</div>
+    <textarea id="w2" placeholder="Example + what was different about the outcome or process…" oninput="autosave()"></textarea>
+  </div>
+  <div class="callout amber">💡 <strong>The difference between "for" and "with" is one of the most important shifts in social innovation.</strong> You've likely already seen both — now you have a name for it.</div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save my answers</button>
+    <button class="btn btn-next" onclick="showTab(1)">Next activity →</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-1">
+  <div class="panel-tag">Module 5 · Activity 2 of 3</div>
+  <h2>How Co-created Is Your Idea?</h2>
+  <div class="time-badge">⏱ About 8–10 minutes</div>
+  <p class="panel-intro">Look at the prototype you developed in Module 4. Answer these four questions honestly — they're designed to reveal how much your idea has been shaped by the people it's meant to serve.</p>
+
+  <div class="plan-row">
+    <div class="plan-label">Whose input has shaped this idea so far?</div>
+    <textarea id="c1" placeholder="Be specific — who have you spoken to, read about, or drawn on?" oninput="autosave()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">Who is most affected by this challenge — and have they been involved?</div>
+    <textarea id="c2" placeholder="Name or describe the group most affected. Have you spoken with them directly?" oninput="autosave()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">What would they add, change, or challenge about your idea?</div>
+    <textarea id="c3" placeholder="Your honest best guess — or what you've already heard from them" oninput="autosave()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">How could you involve them in the next step?</div>
+    <textarea id="c4" placeholder="One specific, realistic way to bring them into the process" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout">💡 <strong>Remember:</strong> co-creation doesn't require a workshop or a budget. It starts with one honest conversation where you listen more than you speak.</div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save my answers</button>
+    <button class="btn btn-next" onclick="showTab(2)">Next activity →</button>
+    <button class="btn btn-ghost" onclick="showTab(0)">← Back</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-2">
+  <div class="panel-tag">Module 5 · Activity 3 of 3</div>
+  <h2>Plan Your Co-creation Conversation</h2>
+  <div class="time-badge">⏱ About 10–12 minutes</div>
+  <p class="panel-intro">Identify one person who is directly affected by the challenge you've been working on. Plan a short conversation with them — not to pitch your idea, but to genuinely learn. If you can, have this conversation before Module 6. What you hear will change your idea.</p>
+
+  <div class="plan-row">
+    <div class="plan-label">Who will you speak with?</div>
+    <textarea id="p1" placeholder="Name, role, or description of the person…" style="min-height:55px;" oninput="autosave(); checkCompletion()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">What do you want to understand — not pitch?</div>
+    <textarea id="p2" placeholder="The thing I most want to learn from this conversation is…" oninput="autosave()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">Two open questions you'll ask</div>
+    <textarea id="p3" placeholder="1. …&#10;2. …" oninput="autosave()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">How will you listen and record what you hear?</div>
+    <textarea id="p4" placeholder="Notes on phone, voice memo, written notes after…" style="min-height:55px;" oninput="autosave()"></textarea>
+  </div>
+  <div class="plan-row">
+    <div class="plan-label">What will you do with what you learn?</div>
+    <textarea id="p5" placeholder="I'll use what I learn to…" style="min-height:55px;" oninput="autosave()"></textarea>
+  </div>
+
+  <hr class="section-divider">
+  <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:16px;">🔍 Reflection</div>
+
+  <div class="q-block">
+    <div class="q-label">What's the hardest thing about genuinely involving others — rather than just presenting your idea to them?</div>
+    <textarea id="r1" placeholder="The hardest part is… because…" oninput="autosave()"></textarea>
+  </div>
+  <div class="q-block">
+    <div class="q-label">Whose perspective challenges you most — and what does that tell you?</div>
+    <textarea id="r2" placeholder="The perspective that challenges me most is… This tells me…" oninput="autosave()"></textarea>
+  </div>
+  <div class="callout">💬 <strong>Peer prompt:</strong> Share what you learned from your co-creation conversation (or what you expect to learn). Ask someone: <em>"What question would you add?"</em></div>
+  <div class="q-block">
+    <textarea id="r3" placeholder="What did they suggest? (optional)" style="min-height:70px;" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="completion-banner" id="completionBanner">
+    <h3>✓ Module 5 complete</h3>
+    <p>You've reflected on co-creation and planned your first conversation with someone affected by your challenge. Download your responses and bring what you learn into Module 6.</p>
+  </div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save all my answers</button>
+    <button class="btn btn-ghost" onclick="showTab(1)">← Back</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Draft saved</div>
+<div class="footer-note">Your responses are stored only in this browser session and are never shared.<br>Module 5 · Designing Social Impact · ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq</div>
+
+<script>
+const fields={0:['w1','w2'],1:['c1','c2','c3','c4'],2:['p1','p2','p3','p4','p5','r1','r2','r3']};
+const labels={w1:'Designed FOR — example and what went wrong',w2:'Designed WITH — example and what was different',c1:'Whose input has shaped this idea so far?',c2:'Who is most affected — have they been involved?',c3:'What would they add, change, or challenge?',c4:'How could you involve them in the next step?',p1:'Who will you speak with?',p2:'What do you want to understand (not pitch)?',p3:'Two open questions you\'ll ask',p4:'How will you listen and record?',p5:'What will you do with what you learn?',r1:'What\'s the hardest thing about genuinely involving others?',r2:'Whose perspective challenges you most — and why?',r3:'Peer prompt response (optional)'};
+const panelTitles=['Activity 1: Designed For or Designed With?','Activity 2: How Co-created Is Your Idea?','Activity 3: Co-creation Conversation Plan & Reflection'];
+let currentTab=0,saveTimer=null;
+function showTab(i){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+i).classList.add('active');document.getElementById('tab-'+i).classList.add('active');currentTab=i;document.getElementById('progressBar').style.width=((i+1)/3*100)+'%';window.scrollTo({top:0,behavior:'smooth'});}
+function autosave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>showToast('✓ Draft saved'),800);}
+function checkCompletion(){if(document.getElementById('p1')?.value.trim()){document.getElementById('completionBanner').classList.add('show');document.getElementById('tab-2').classList.add('done');}}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+function saveAndExport(){
+  const allIds=Object.values(fields).flat();
+  if(!allIds.some(id=>document.getElementById(id)?.value.trim())){showToast('Fill in some answers first');return;}
+  const date=new Date().toLocaleDateString('en-GB');
+  let sections='';
+  Object.entries(fields).forEach(([tab,ids])=>{
+    const items=ids.map(id=>{const v=document.getElementById(id)?.value.trim();return v?`<div class="q">${labels[id]}</div><div class="a">${v.replace(/</g,'&lt;')}</div>`:''}).filter(Boolean).join('');
+    if(items)sections+=`<h2>${panelTitles[tab]}</h2>${items}`;
+  });
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Module 5 — My Answers</title><style>body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7}h1{font-size:22px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:32px}h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:#2D6A4F;margin:28px 0 4px;border-top:1px solid #eee;padding-top:16px}.q{font-weight:bold;font-size:14px;margin:16px 0 4px}.a{font-size:14px;color:#333;white-space:pre-wrap}.footer{margin-top:48px;padding-top:16px;border-top:1px solid #eee;font-size:12px;color:#aaa}@media print{body{margin:20px}}</style></head><body><h1>Module 5 — My Answers</h1><div class="meta">Designing Social Impact · ERUA · ${date}</div>${sections}<div class="footer">ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq</div></body></html>`;
+  let opened=false;
+  try{const b=new Blob([html],{type:'text/html'});const u=URL.createObjectURL(b);const w=window.open(u,'_blank');if(w){opened=true;setTimeout(()=>URL.revokeObjectURL(u),3000);}}catch(e){}
+  if(!opened){try{const w=window.open('data:text/html;charset=utf-8,'+encodeURIComponent(html),'_blank');if(w)opened=true;}catch(e){}}
+  if(opened)showToast('✓ Opened in new tab — print or save as PDF');
+  else showOverlay();
+}
+function showOverlay(){
+  const existing=document.getElementById('answerOverlay');if(existing)existing.remove();
+  const date=new Date().toLocaleDateString('en-GB');
+  let text=`MODULE 5 ACTIVITIES\nDate: ${date}\n\n`;
+  Object.entries(fields).forEach(([tab,ids])=>{text+=panelTitles[tab].toUpperCase()+'\n---\n';ids.forEach(id=>{const v=document.getElementById(id)?.value.trim();if(v)text+=`\n${labels[id]}:\n${v}\n`;});text+='\n';});
+  const overlay=document.createElement('div');overlay.id='answerOverlay';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
+  const box=document.createElement('div');box.style.cssText='background:white;border-radius:12px;padding:24px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto';
+  box.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><strong>Your answers</strong><button onclick="document.getElementById('answerOverlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888">✕</button></div><textarea readonly style="width:100%;height:300px;font-family:monospace;font-size:12px;border:1px solid #ddd;border-radius:8px;padding:12px;resize:none">${text}</textarea><button onclick="const ta=document.querySelector('#answerOverlay textarea');ta.select();navigator.clipboard?.writeText(ta.value).catch(()=>document.execCommand('copy'));showToast('✓ Copied')" style="margin-top:12px;background:#2D6A4F;color:white;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Copy to clipboard</button>`;
+  overlay.appendChild(box);document.body.appendChild(overlay);showToast('✓ Ready to copy');
+}
+</script>
+</body>
+</html>
