@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 6 Activities — From Ideas to Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-light: #6B6560;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --border: #E2DDD8;
+    --amber: #D4870A;
+    --amber-light: #FFF3CD;
+    --purple: #5C4B8A;
+    --purple-light: #EDE9F8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .tab-nav {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .tab-nav::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 14px 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--ink-light);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn:hover { color: var(--accent); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .tab-btn.done .tab-dot,
+  .tab-btn.active .tab-dot { background: var(--accent); }
+
+  .panel { display: none; padding: 32px 24px 60px; max-width: 680px; margin: 0 auto; }
+  .panel.active { display: block; animation: fadeUp 0.4s ease both; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  .panel h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(22px, 4vw, 32px);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .panel-intro {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    margin-bottom: 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-light);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    margin-bottom: 20px;
+  }
+
+  .q-block { margin-bottom: 22px; }
+
+  .q-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.4;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .q-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+
+  .q-hint {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+    margin-left: 23px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.08);
+  }
+
+  textarea::placeholder { color: #C5BFB9; }
+
+  .section-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+  .callout {
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 16px 0 24px;
+  }
+
+  .callout.amber { background: var(--amber-light); border-color: var(--amber); }
+  .callout.purple { background: var(--purple-light); border-color: var(--purple); }
+  .callout strong { font-weight: 600; }
+
+  /* Diamond self-assessment grid */
+  .diamond-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .diamond-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .diamond-card:focus-within { border-color: var(--accent); }
+
+  .diamond-phase {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .phase-emoji { font-size: 18px; }
+
+  .phase-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .phase-subtitle {
+    font-size: 11px;
+    color: var(--ink-light);
+    margin-top: 1px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-light);
+    margin-bottom: 4px;
+    margin-top: 10px;
+    letter-spacing: 0.04em;
+  }
+
+  .diamond-card textarea {
+    background: var(--bg);
+    border-color: transparent;
+    min-height: 60px;
+    font-size: 12px;
+  }
+
+  .diamond-card textarea:focus {
+    background: var(--surface);
+    border-color: var(--accent);
+    box-shadow: none;
+  }
+
+  /* Canvas rows */
+  .canvas-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 0.2s;
+  }
+
+  .canvas-row:focus-within { border-color: var(--accent); }
+
+  .canvas-prompt {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    min-width: 180px;
+    max-width: 180px;
+    padding-top: 4px;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+
+  .canvas-row textarea {
+    border: none;
+    background: transparent;
+    padding: 0;
+    min-height: 50px;
+    resize: none;
+    font-size: 13px;
+    flex: 1;
+  }
+
+  .canvas-row textarea:focus { border: none; box-shadow: none; }
+
+  /* Next step highlight */
+  .next-step-box {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .next-step-box .ns-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .next-step-box textarea {
+    background: var(--accent-light);
+    border-color: transparent;
+    font-size: 15px;
+    font-weight: 500;
+    min-height: 70px;
+  }
+
+  .next-step-box textarea:focus {
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: none;
+  }
+
+  /* Completion */
+  .completion-banner {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    display: none;
+    margin-bottom: 24px;
+  }
+
+  .completion-banner.show { display: block; animation: fadeUp 0.4s ease both; }
+
+  .completion-banner .complete-icon { font-size: 36px; margin-bottom: 10px; }
+
+  .completion-banner h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .completion-banner p { font-size: 14px; color: var(--accent); line-height: 1.6; max-width: 480px; margin: 0 auto; }
+
+  .completion-banner .quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--accent);
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(45,106,79,0.2);
+  }
+
+  /* Actions */
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #235C40; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-light);
+    border: 1.5px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--ink-light); color: var(--ink); }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--ink);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .progress-bar-wrap { height: 3px; background: var(--border); width: 100%; }
+  .progress-bar-fill { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-light);
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 520px) {
+    .diamond-grid { grid-template-columns: 1fr; }
+    .canvas-row { flex-direction: column; gap: 6px; }
+    .canvas-prompt { min-width: unset; max-width: unset; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progressBar" style="width:33%"></div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" id="tab-0" onclick="showTab(0)">
+    <span class="tab-dot"></span> 1 · Warm-up
+  </button>
+  <button class="tab-btn" id="tab-1" onclick="showTab(1)">
+    <span class="tab-dot"></span> 2 · Double Diamond
+  </button>
+  <button class="tab-btn" id="tab-2" onclick="showTab(2)">
+    <span class="tab-dot"></span> 3 · Planning Canvas & Reflection
+  </button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 1 — WARM-UP
+══════════════════════════════════════════ -->
+<div class="panel active" id="panel-0">
+  <div class="panel-tag">Module 6 · Activity 1 of 3</div>
+  <h2>What Would "Working" Look Like?</h2>
+  <div class="time-badge">⏱ About 5 minutes</div>
+  <p class="panel-intro">Before thinking about how to get there, imagine the destination. One year from now, your idea has been running. What do you see? Defining success before you start is one of the most underrated skills in social innovation — and most people skip it.</p>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">✅</span> What would you see, hear, or feel that tells you your idea is working?</div>
+    <div class="q-hint">Be specific — not "it would be successful" but what that actually looks like in practice</div>
+    <textarea id="w1" placeholder="In one year, I would know it's working if…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">⚠️</span> What would tell you it isn't working?</div>
+    <div class="q-hint">What are the warning signs — the things you'd see or not see if the idea wasn't having the impact you hoped?</div>
+    <textarea id="w2" placeholder="I would know it wasn't working if…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout amber">
+    💡 <strong>The gap between these two answers</strong> is where your measurement and learning strategy lives. You'll come back to this in the planning canvas.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save my answers</button>
+    <button class="btn btn-next" style="background:var(--ink);color:white;border-radius:9px;border:none;padding:11px 20px;font-size:13px;font-weight:600;cursor:pointer;" onclick="showTab(1)">Next activity →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2 — DOUBLE DIAMOND SELF-ASSESSMENT
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-1">
+  <div class="panel-tag">Module 6 · Activity 2 of 3</div>
+  <h2>Where Is Your Idea in the Double Diamond?</h2>
+  <div class="time-badge">⏱ About 10–12 minutes</div>
+  <p class="panel-intro">You've been moving through the Double Diamond without necessarily knowing it. Module 1 was Discover. Modules 2–3 were Define. Modules 4–5 were Develop. Now in Module 6 you're entering Deliver. For each phase, reflect honestly on what you've done well — and what still needs work.</p>
+
+  <div class="callout">
+    🗺 <strong>Quick reminder:</strong> Discover = research deeply · Define = clarify the core problem · Develop = generate and prototype ideas · Deliver = test, refine, scale
+  </div>
+
+  <div class="diamond-grid">
+
+    <div class="diamond-card">
+      <div class="diamond-phase">
+        <span class="phase-emoji">🔍</span>
+        <div>
+          <div class="phase-name">Discover</div>
+          <div class="phase-subtitle">Research & observe</div>
+        </div>
+      </div>
+      <div class="field-label">What you've done well</div>
+      <textarea id="d1s" placeholder="e.g. Identified a real challenge, used the Iceberg Model…" oninput="autosave()"></textarea>
+      <div class="field-label">What still needs work</div>
+      <textarea id="d1g" placeholder="e.g. Haven't spoken directly with affected people yet…" oninput="autosave()"></textarea>
+    </div>
+
+    <div class="diamond-card">
+      <div class="diamond-phase">
+        <span class="phase-emoji">🎯</span>
+        <div>
+          <div class="phase-name">Define</div>
+          <div class="phase-subtitle">Clarify the problem</div>
+        </div>
+      </div>
+      <div class="field-label">What you've done well</div>
+      <textarea id="d2s" placeholder="e.g. Mapped stakeholders, wrote a How Might We question…" oninput="autosave()"></textarea>
+      <div class="field-label">What still needs work</div>
+      <textarea id="d2g" placeholder="e.g. Problem statement still feels too broad…" oninput="autosave()"></textarea>
+    </div>
+
+    <div class="diamond-card">
+      <div class="diamond-phase">
+        <span class="phase-emoji">💡</span>
+        <div>
+          <div class="phase-name">Develop</div>
+          <div class="phase-subtitle">Explore & prototype</div>
+        </div>
+      </div>
+      <div class="field-label">What you've done well</div>
+      <textarea id="d3s" placeholder="e.g. Brainstormed 10+ ideas, created a rough prototype…" oninput="autosave()"></textarea>
+      <div class="field-label">What still needs work</div>
+      <textarea id="d3g" placeholder="e.g. Haven't tested it with anyone affected yet…" oninput="autosave()"></textarea>
+    </div>
+
+    <div class="diamond-card">
+      <div class="diamond-phase">
+        <span class="phase-emoji">🚀</span>
+        <div>
+          <div class="phase-name">Deliver</div>
+          <div class="phase-subtitle">Test, refine, scale</div>
+        </div>
+      </div>
+      <div class="field-label">What you've done well</div>
+      <textarea id="d4s" placeholder="e.g. Defined what success looks like…" oninput="autosave()"></textarea>
+      <div class="field-label">What still needs work</div>
+      <textarea id="d4g" placeholder="e.g. Need a concrete first test with real users…" oninput="autosave()"></textarea>
+    </div>
+
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">💭</span> Which phase needs the most attention before you move forward — and why?</div>
+    <textarea id="d5" placeholder="The phase I most need to go back to is… because…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout purple">
+    💡 <strong>It's completely normal to realise you need to go back.</strong> The Double Diamond is not a checklist — it's a cycle. Moving backwards to discover or define more deeply is progress, not failure.
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save my answers</button>
+    <button class="btn btn-next" style="background:var(--ink);color:white;border-radius:9px;border:none;padding:11px 20px;font-size:13px;font-weight:600;cursor:pointer;" onclick="showTab(2)">Next activity →</button>
+    <button class="btn btn-ghost" onclick="showTab(0)">← Back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3 — PLANNING CANVAS + REFLECTION
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-2">
+  <div class="panel-tag">Module 6 · Activity 3 of 3</div>
+  <h2>Your Next Step Planning Canvas</h2>
+  <div class="time-badge">⏱ About 12–15 minutes</div>
+  <p class="panel-intro">You don't need a full plan. You need one honest next step. Complete this short canvas for your idea — then commit to one specific action this week. Commitment is easier when it's concrete and specific.</p>
+
+  <div class="canvas-row">
+    <div class="canvas-prompt">My idea in one sentence</div>
+    <textarea id="c1" placeholder="My idea is to…" oninput="autosave(); checkCompletion()"></textarea>
+  </div>
+
+  <div class="canvas-row">
+    <div class="canvas-prompt">The social challenge it addresses</div>
+    <textarea id="c2" placeholder="It addresses…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="canvas-row">
+    <div class="canvas-prompt">The people it's designed with — not just for</div>
+    <textarea id="c3" placeholder="The people involved in designing this are…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="canvas-row">
+    <div class="canvas-prompt">The one thing I most want to test next</div>
+    <textarea id="c4" placeholder="The single most important assumption I need to test is…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="canvas-row">
+    <div class="canvas-prompt">Who I need to involve to do that</div>
+    <textarea id="c5" placeholder="To test this, I need to involve…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="canvas-row">
+    <div class="canvas-prompt">What "working" looks like in 3 months</div>
+    <textarea id="c6" placeholder="In 3 months, I'll know it's working if…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="next-step-box">
+    <div class="ns-label">🎯 My single next action — this week</div>
+    <textarea id="c7" placeholder="This week, I will…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout amber">
+    💡 <strong>Say your next action out loud</strong> — or write it somewhere you'll see it. Accountability makes ideas real. Share it with someone and ask them to check in with you in two weeks.
+  </div>
+
+  <hr class="section-divider">
+
+  <div style="font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 18px;">🔍 Final Reflection</div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🔄</span> Go back to Module 1 — how has your understanding of the social challenge changed over this course?</div>
+    <div class="q-hint">What do you see now that you didn't see when you started?</div>
+    <textarea id="r1" placeholder="When I started, I thought… Now I understand…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">💡</span> What surprised you most — about social innovation, or about yourself?</div>
+    <textarea id="r2" placeholder="I didn't expect… / I surprised myself by…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="q-block">
+    <div class="q-label"><span class="q-icon">🚀</span> What do you want to explore further — in the micro-credential, in practice, or on your own?</div>
+    <textarea id="r3" placeholder="I want to go deeper on… / The next thing I want to learn is…" oninput="autosave()"></textarea>
+  </div>
+
+  <div class="callout">
+    💬 <strong>Peer prompt:</strong> Share your next step with someone and ask them to check in with you in two weeks. Accountability makes ideas real. Note who you've told below.
+  </div>
+
+  <div class="q-block">
+    <textarea id="r4" placeholder="I shared my next step with… (optional)" style="min-height:60px;" oninput="autosave()"></textarea>
+  </div>
+
+  <!-- Completion banner -->
+  <div class="completion-banner" id="completionBanner">
+    <div class="complete-icon">🌱</div>
+    <h3>You've completed the course</h3>
+    <p>You've explored a social challenge, mapped your stakeholders, generated ideas, prototyped a solution, thought about co-creation, and committed to a next step. That's the beginning of a design practice.</p>
+    <div class="quote">"Social innovation is not about changing everything overnight. It starts with curiosity, a question, and the courage to try something new — with others."</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="saveAndExport()">↓ Save all my answers</button>
+    <button class="btn btn-ghost" onclick="showTab(1)">← Back</button>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Draft saved</div>
+
+<div class="footer-note">
+  Your responses are stored only in this browser session and are never shared. Save your answers using the button above.
+  <br>Module 6 · Designing Social Impact · ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq
+</div>
+
+<script>
+  const fields = {
+    0: ['w1', 'w2'],
+    1: ['d1s', 'd1g', 'd2s', 'd2g', 'd3s', 'd3g', 'd4s', 'd4g', 'd5'],
+    2: ['c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'r1', 'r2', 'r3', 'r4']
+  };
+
+  const labels = {
+    w1: 'What would tell me it\'s working in one year?',
+    w2: 'What would tell me it\'s not working?',
+    d1s: 'DISCOVER — What I\'ve done well',
+    d1g: 'DISCOVER — What still needs work',
+    d2s: 'DEFINE — What I\'ve done well',
+    d2g: 'DEFINE — What still needs work',
+    d3s: 'DEVELOP — What I\'ve done well',
+    d3g: 'DEVELOP — What still needs work',
+    d4s: 'DELIVER — What I\'ve done well',
+    d4g: 'DELIVER — What still needs work',
+    d5: 'Which phase needs the most attention — and why?',
+    c1: 'My idea in one sentence',
+    c2: 'The social challenge it addresses',
+    c3: 'The people it\'s designed with (not just for)',
+    c4: 'The one thing I most want to test next',
+    c5: 'Who I need to involve to test it',
+    c6: 'What "working" looks like in 3 months',
+    c7: '🎯 My single next action — this week',
+    r1: 'How has my understanding of the challenge changed?',
+    r2: 'What surprised me most?',
+    r3: 'What do I want to explore further?',
+    r4: 'I shared my next step with… (optional)'
+  };
+
+  const panelTitles = [
+    'Activity 1: What Would "Working" Look Like?',
+    'Activity 2: Double Diamond Self-Assessment',
+    'Activity 3: Planning Canvas & Final Reflection'
+  ];
+
+  let currentTab = 0;
+  let saveTimer = null;
+
+  function showTab(i) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + i).classList.add('active');
+    document.getElementById('tab-' + i).classList.add('active');
+    currentTab = i;
+    document.getElementById('progressBar').style.width = ((i + 1) / 3 * 100) + '%';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function autosave() {
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => showToast('✓ Draft saved'), 800);
+  }
+
+  function checkCompletion() {
+    const c1 = document.getElementById('c1')?.value.trim();
+    const c7 = document.getElementById('c7')?.value.trim();
+    if (c1 && c7) {
+      document.getElementById('completionBanner').classList.add('show');
+      document.getElementById('tab-2').classList.add('done');
+    }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function saveAndExport() {
+    const allIds = Object.values(fields).flat();
+    if (!allIds.some(id => document.getElementById(id)?.value.trim())) {
+      showToast('Fill in some answers first');
+      return;
+    }
+
+    const date = new Date().toLocaleDateString('en-GB');
+    let sections = '';
+
+    Object.entries(fields).forEach(([tab, ids]) => {
+      const items = ids.map(id => {
+        const v = document.getElementById(id)?.value.trim();
+        return v ? `<div class="q">${labels[id]}</div><div class="a">${v.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>` : '';
+      }).filter(Boolean).join('');
+      if (items) sections += `<h2>${panelTitles[tab]}</h2>${items}`;
+    });
+
+    const html = `<!DOCTYPE html>
+<html><head><meta charset="UTF-8">
+<title>Module 6 — My Answers</title>
+<style>
+  body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7}
+  h1{font-size:22px;margin-bottom:4px}
+  .meta{color:#888;font-size:13px;margin-bottom:32px}
+  h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:#2D6A4F;
+     margin:28px 0 4px;border-top:1px solid #eee;padding-top:16px}
+  .q{font-weight:bold;font-size:14px;margin:16px 0 4px}
+  .a{font-size:14px;color:#333;white-space:pre-wrap}
+  .next-step{background:#D8F3DC;border-radius:8px;padding:16px 20px;margin:20px 0}
+  .next-step .ns-label{font-size:11px;font-weight:bold;text-transform:uppercase;
+                       letter-spacing:.08em;color:#2D6A4F;margin-bottom:6px}
+  .next-step .ns-value{font-size:16px;font-weight:600;color:#1a1a1a}
+  .quote{font-style:italic;color:#5C4B8A;border-left:3px solid #5C4B8A;
+         padding-left:14px;margin:24px 0;font-size:14px}
+  .footer{margin-top:48px;padding-top:16px;border-top:1px solid #eee;font-size:12px;color:#aaa}
+  @media print{body{margin:20px}}
+</style></head><body>
+<h1>Module 6 — My Answers</h1>
+<div class="meta">Designing Social Impact · ERUA Social Entrepreneurship e-Course · ${date}</div>`;
+
+    // Special handling for next step
+    const nextStep = document.getElementById('c7')?.value.trim();
+    let fullHtml = html + sections;
+
+    if (nextStep) {
+      fullHtml += `<div class="next-step">
+        <div class="ns-label">🎯 My single next action — this week</div>
+        <div class="ns-value">${nextStep.replace(/</g, '&lt;')}</div>
+      </div>`;
+    }
+
+    fullHtml += `<div class="quote">"Social innovation is not about changing everything overnight. It starts with curiosity, a question, and the courage to try something new — with others."</div>
+<div class="footer">ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6 · Module 3: Designing Social Impact</div>
+</body></html>`;
+
+    let opened = false;
+
+    try {
+      const blob = new Blob([fullHtml], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const win = window.open(url, '_blank');
+      if (win) {
+        opened = true;
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+      }
+    } catch(e) {}
+
+    if (!opened) {
+      try {
+        const win = window.open('data:text/html;charset=utf-8,' + encodeURIComponent(fullHtml), '_blank');
+        if (win) opened = true;
+      } catch(e) {}
+    }
+
+    if (opened) {
+      showToast('✓ Opened in new tab — print or save as PDF');
+    } else {
+      showOverlay();
+    }
+  }
+
+  function showOverlay() {
+    const existing = document.getElementById('answerOverlay');
+    if (existing) existing.remove();
+
+    const date = new Date().toLocaleDateString('en-GB');
+    let text = `MODULE 6 ACTIVITIES — From Ideas to Impact\nDate: ${date}\n\n`;
+
+    Object.entries(fields).forEach(([tab, ids]) => {
+      text += panelTitles[tab].toUpperCase() + '\n---\n';
+      ids.forEach(id => {
+        const v = document.getElementById(id)?.value.trim();
+        if (v) text += `\n${labels[id]}:\n${v}\n`;
+      });
+      text += '\n';
+    });
+
+    text += '\n"Social innovation is not about changing everything overnight.\nIt starts with curiosity, a question, and the courage to try something new — with others."\n\n';
+    text += 'ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6\n';
+
+    const overlay = document.createElement('div');
+    overlay.id = 'answerOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background:white;border-radius:12px;padding:24px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto;position:relative';
+
+    box.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <strong style="font-size:15px">Your answers</strong>
+        <button onclick="document.getElementById('answerOverlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888">✕</button>
+      </div>
+      <p style="font-size:12px;color:#888;margin-bottom:12px">Select all (Ctrl+A) and copy (Ctrl+C) to save your responses.</p>
+      <textarea readonly style="width:100%;height:320px;font-family:monospace;font-size:12px;line-height:1.6;border:1px solid #ddd;border-radius:8px;padding:12px;resize:none;color:#333">${text}</textarea>
+      <button onclick="copyOverlay()" style="margin-top:12px;background:#2D6A4F;color:white;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Copy to clipboard</button>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    showToast('✓ Your answers are ready to copy');
+  }
+
+  function copyOverlay() {
+    const ta = document.querySelector('#answerOverlay textarea');
+    if (!ta) return;
+    ta.select();
+    try {
+      navigator.clipboard.writeText(ta.value).then(() => showToast('✓ Copied to clipboard'));
+    } catch(e) {
+      document.execCommand('copy');
+      showToast('✓ Copied to clipboard');
+    }
+  }
+</script>
+</body>
+</html>
