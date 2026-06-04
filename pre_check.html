@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pre-Check — Designing Social Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-light: #6B6560;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --border: #E2DDD8;
+    --purple: #5C4B8A;
+    --purple-light: #EDE9F8;
+    --warn: #E07A5F;
+    --warn-light: #FDE8E3;
+    --amber-light: #FFF3CD;
+    --amber: #D4870A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .screen { display: none; animation: fadeUp 0.4s ease both; }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .screen-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 36px 24px 60px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--purple);
+    background: var(--purple-light);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 4vw, 34px);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+
+  /* Welcome */
+  .welcome-box {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  .welcome-box p { margin-bottom: 0; }
+
+  /* Progress dots */
+  .progress-dots {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+
+  .dot {
+    height: 6px;
+    border-radius: 99px;
+    background: var(--border);
+    flex: 1;
+    transition: background 0.3s;
+  }
+
+  .dot.active { background: var(--purple); }
+  .dot.done { background: var(--purple); }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .q-number {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+
+  .scale-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  .scale { display: flex; gap: 8px; }
+
+  .scale-btn {
+    flex: 1;
+    aspect-ratio: 1;
+    max-width: 68px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--ink-light);
+  }
+
+  .scale-btn span.hint {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--ink-light);
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .scale-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .scale-btn.sel-1 { background: var(--warn-light); border-color: var(--warn); color: var(--warn); }
+  .scale-btn.sel-2 { background: #FFF3CD; border-color: #F0B429; color: #78500A; }
+  .scale-btn.sel-3 { background: #FFF8E1; border-color: #D4A017; color: #6B4800; }
+  .scale-btn.sel-4 { background: #E8F5E9; border-color: #4CAF50; color: #1B5E20; }
+  .scale-btn.sel-5 { background: var(--purple-light); border-color: var(--purple); color: var(--purple); }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-purple { background: var(--purple); color: white; }
+  .btn-purple:hover { background: #4A3A6E; transform: translateY(-1px); }
+  .btn-purple:disabled { background: var(--border); color: var(--ink-light); cursor: not-allowed; transform: none; }
+  .btn-ghost { background: transparent; color: var(--ink-light); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--ink-light); color: var(--ink); }
+
+  /* Saved screen */
+  .saved-box {
+    background: var(--surface);
+    border: 1.5px solid var(--purple);
+    border-radius: 14px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .saved-box .big-icon { font-size: 44px; margin-bottom: 12px; }
+
+  .saved-box h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  .saved-box p {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    max-width: 440px;
+    margin: 0 auto 20px;
+  }
+
+  .score-summary {
+    background: var(--purple-light);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 20px;
+    text-align: left;
+  }
+
+  .score-summary-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 10px;
+  }
+
+  .score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 12px;
+  }
+
+  .score-row-q { flex: 1; color: var(--ink); line-height: 1.4; }
+
+  .score-pill {
+    background: var(--purple);
+    color: white;
+    font-weight: 600;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    flex-shrink: 0;
+  }
+
+  /* Download */
+  .download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 9px;
+    border: 1.5px solid var(--purple);
+    background: transparent;
+    color: var(--purple);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 16px;
+  }
+
+  .download-btn:hover { background: var(--purple-light); }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--ink);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .footer-note {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .scale-btn span.hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="screen-welcome">
+  <div class="screen-inner">
+    <div class="tag">Pre-Check · Before You Begin</div>
+    <h1>How confident are you right now?</h1>
+    <p class="subtitle">Before starting the course, rate your confidence on 5 short statements. Takes about 3 minutes. No right or wrong answers — this is your personal starting point.</p>
+    <div class="welcome-box">
+      <p>At the end of the course, you'll answer the same questions again in the post-check below Module 6. You'll see a side-by-side comparison of your confidence before and after — a record of your own growth.</p>
+    </div>
+    <button class="btn btn-purple" onclick="startCheck()">Begin →</button>
+  </div>
+</div>
+
+<!-- QUESTIONS -->
+<div class="screen" id="screen-questions">
+  <div class="screen-inner">
+    <div class="tag">Pre-Check · Statement <span id="q-count">1</span> of 5</div>
+    <h1>Before the Course</h1>
+    <p class="subtitle">Rate your current confidence honestly — 1 = not confident at all, 5 = very confident.</p>
+    <div class="progress-dots" id="progress-dots"></div>
+    <div id="q-area"></div>
+    <div class="nav">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQ()" style="visibility:hidden">← Back</button>
+      <button class="btn btn-purple" id="btn-next" onclick="nextQ()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SAVED -->
+<div class="screen" id="screen-saved">
+  <div class="screen-inner">
+    <div class="saved-box">
+      <div class="big-icon">🔍</div>
+      <h2>Pre-check complete</h2>
+      <p>Your starting point is saved. Now work through all six modules of the course. When you're done, scroll to the bottom of this page and complete the post-check to see how your confidence has grown.</p>
+      <div class="score-summary" id="score-summary"></div>
+      <button class="download-btn" onclick="downloadScores()">↓ Download my pre-check scores</button>
+    </div>
+    <div class="footer-note">
+      Your responses are stored only in this browser session and are never shared.<br>
+      Designing Social Impact · ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Saved</div>
+
+<script>
+  const questions = [
+    'I can explain what a social challenge is and why it is different from a technical problem.',
+    'I understand what social innovation means — and what makes an idea genuinely "social."',
+    'I can identify and map the stakeholders of a social initiative, including those with hidden power.',
+    'I understand what design thinking and co-creation mean in practice — not just as concepts.',
+    'I can describe the Double Diamond model and explain how it helps move from a problem to a solution.'
+  ];
+
+  const scores = [0, 0, 0, 0, 0];
+  let current = 0;
+
+  function startCheck() {
+    current = 0;
+    showScreen('screen-questions');
+    renderQ();
+  }
+
+  function renderQ() {
+    const q = questions[current];
+    const score = scores[current];
+
+    document.getElementById('q-count').textContent = current + 1;
+
+    document.getElementById('q-area').innerHTML = `
+      <div class="question-card">
+        <div class="q-number">Statement ${current + 1} of ${questions.length}</div>
+        <div class="q-text">${q}</div>
+        <div class="scale-label">Your confidence level right now</div>
+        <div class="scale">
+          ${[1,2,3,4,5].map(n => `
+            <button class="scale-btn ${score===n?'sel-'+n:''}" onclick="selectScore(${n})">
+              ${n}
+              <span class="hint">${n===1?'Not at all':n===5?'Fully':''}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // Progress dots
+    document.getElementById('progress-dots').innerHTML = questions.map((_, i) => {
+      let cls = 'dot';
+      if (i < current) cls += ' done';
+      if (i === current) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    // Nav
+    document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible';
+    const isLast = current === questions.length - 1;
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.textContent = isLast ? 'Save my pre-check →' : 'Next →';
+    nextBtn.disabled = score === 0;
+  }
+
+  function selectScore(n) {
+    scores[current] = n;
+    renderQ();
+  }
+
+  function nextQ() {
+    if (scores[current] === 0) return;
+    if (current < questions.length - 1) {
+      current++;
+      renderQ();
+    } else {
+      showSaved();
+    }
+  }
+
+  function prevQ() {
+    if (current > 0) { current--; renderQ(); }
+  }
+
+  function showSaved() {
+    // Build score summary
+    const summary = document.getElementById('score-summary');
+    summary.innerHTML = `<div class="score-summary-title">Your pre-check scores</div>` +
+      questions.map((q, i) => `
+        <div class="score-row">
+          <span class="score-row-q">${q}</span>
+          <span class="score-pill">${scores[i]}/5</span>
+        </div>
+      `).join('');
+    showScreen('screen-saved');
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function downloadScores() {
+    const date = new Date().toLocaleDateString('en-GB');
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Pre-Check Scores</title>
+<style>body{font-family:Georgia,serif;max-width:600px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7}
+h1{font-size:20px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:28px}
+.note{background:#EDE9F8;border-radius:8px;padding:14px;font-size:13px;color:#5C4B8A;margin-bottom:24px}
+.row{background:#f9f9f9;border-radius:8px;padding:14px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.q{flex:1;font-size:14px}.pill{background:#5C4B8A;color:white;font-weight:700;padding:3px 10px;border-radius:99px;font-size:13px;flex-shrink:0}
+.footer{margin-top:40px;padding-top:14px;border-top:1px solid #eee;font-size:12px;color:#aaa}
+@media print{body{margin:20px}}</style></head><body>
+<h1>Pre-Check Scores — Before the Course</h1>
+<div class="meta">Designing Social Impact · ERUA Social Entrepreneurship e-Course · ${date}</div>
+<div class="note">📌 Keep these scores. After completing all six modules, take the post-check to see how your confidence has grown.</div>
+${questions.map((q, i) => `<div class="row"><span class="q">${q}</span><span class="pill">${scores[i]}/5</span></div>`).join('')}
+<div class="footer">ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6</div>
+</body></html>`;
+
+    let opened = false;
+    try { const b = new Blob([html],{type:'text/html'}); const u = URL.createObjectURL(b); const w = window.open(u,'_blank'); if(w){opened=true;setTimeout(()=>URL.revokeObjectURL(u),3000);} } catch(e) {}
+    if (!opened) { try { const w = window.open('data:text/html;charset=utf-8,'+encodeURIComponent(html),'_blank'); if(w) opened=true; } catch(e){} }
+    if (opened) showToast('✓ Opened in new tab');
+    else {
+      const existing = document.getElementById('overlay'); if(existing) existing.remove();
+      let text = `PRE-CHECK SCORES\n${date}\n\n`;
+      questions.forEach((q,i) => { text += `${q}\nScore: ${scores[i]}/5\n\n`; });
+      const ov = document.createElement('div'); ov.id='overlay';
+      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
+      const bx = document.createElement('div'); bx.style.cssText='background:white;border-radius:12px;padding:24px;max-width:580px;width:100%;max-height:80vh;overflow-y:auto';
+      bx.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><strong>Your scores</strong><button onclick="document.getElementById('overlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888">✕</button></div><textarea readonly style="width:100%;height:260px;font-family:monospace;font-size:12px;border:1px solid #ddd;border-radius:8px;padding:10px;resize:none">${text}</textarea><button onclick="const ta=document.querySelector('#overlay textarea');ta.select();navigator.clipboard?.writeText(ta.value).catch(()=>document.execCommand('copy'));showToast('✓ Copied')" style="margin-top:10px;background:#5C4B8A;color:white;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Copy to clipboard</button>`;
+      ov.appendChild(bx); document.body.appendChild(ov); showToast('✓ Ready to copy');
+    }
+  }
+</script>
+</body>
+</html>
