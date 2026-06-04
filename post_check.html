@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Post-Check — Designing Social Impact</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-light: #6B6560;
+    --accent: #2D6A4F;
+    --accent-light: #D8F3DC;
+    --border: #E2DDD8;
+    --purple: #5C4B8A;
+    --purple-light: #EDE9F8;
+    --warn: #E07A5F;
+    --warn-light: #FDE8E3;
+    --amber: #D4870A;
+    --amber-light: #FFF3CD;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  .screen { display: none; animation: fadeUp 0.4s ease both; }
+  .screen.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .screen-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 36px 24px 60px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+
+  .tag-post { color: var(--accent); background: var(--accent-light); }
+  .tag-reflect { color: var(--amber); background: var(--amber-light); }
+  .tag-results { color: var(--purple); background: var(--purple-light); }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 4vw, 34px);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--ink-light);
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+
+  /* Pre-score input */
+  .pre-score-section {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .pre-score-section h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .pre-score-section p {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 16px;
+    line-height: 1.55;
+  }
+
+  .pre-inputs { display: flex; flex-direction: column; gap: 10px; }
+
+  .pre-input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .pre-q-short {
+    flex: 1;
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+
+  .pre-score-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--purple);
+    background: var(--purple-light);
+    border: 1.5px solid var(--purple);
+    border-radius: 6px;
+    padding: 4px 8px;
+    cursor: pointer;
+    outline: none;
+    flex-shrink: 0;
+    width: 64px;
+  }
+
+  /* Progress dots */
+  .progress-dots { display: flex; gap: 6px; margin-bottom: 28px; }
+
+  .dot { height: 6px; border-radius: 99px; background: var(--border); flex: 1; transition: background 0.3s; }
+  .dot.active { background: var(--accent); }
+  .dot.done { background: var(--accent); }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .q-number {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.55;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+
+  .scale-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+  }
+
+  .scale { display: flex; gap: 8px; }
+
+  .scale-btn {
+    flex: 1;
+    aspect-ratio: 1;
+    max-width: 68px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--ink-light);
+  }
+
+  .scale-btn span.hint { font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500; color: var(--ink-light); text-align: center; line-height: 1.2; }
+  .scale-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .scale-btn.sel-1 { background: var(--warn-light); border-color: var(--warn); color: var(--warn); }
+  .scale-btn.sel-2 { background: #FFF3CD; border-color: #F0B429; color: #78500A; }
+  .scale-btn.sel-3 { background: #FFF8E1; border-color: #D4A017; color: #6B4800; }
+  .scale-btn.sel-4 { background: #E8F5E9; border-color: #4CAF50; color: #1B5E20; }
+  .scale-btn.sel-5 { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+
+  /* Reflection */
+  .reflection-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+    margin-bottom: 14px;
+  }
+
+  .r-label { font-size: 14px; font-weight: 600; line-height: 1.5; color: var(--ink); margin-bottom: 4px; }
+  .r-hint { font-size: 12px; color: var(--ink-light); margin-bottom: 10px; font-style: italic; line-height: 1.5; }
+
+  textarea {
+    width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    resize: vertical;
+    min-height: 85px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus { border-color: var(--accent); background: var(--surface); }
+  textarea::placeholder { color: #C5BFB9; }
+
+  /* Nav */
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 11px 22px;
+    border-radius: 9px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-accent { background: var(--accent); color: white; }
+  .btn-accent:hover { background: #235C40; transform: translateY(-1px); }
+  .btn-accent:disabled { background: var(--border); color: var(--ink-light); cursor: not-allowed; transform: none; }
+  .btn-ink { background: var(--ink); color: white; }
+  .btn-ink:hover { background: #333; }
+  .btn-ghost { background: transparent; color: var(--ink-light); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--ink-light); color: var(--ink); }
+
+  /* Results */
+  .growth-banner {
+    background: var(--accent-light);
+    border: 1.5px solid var(--accent);
+    border-radius: 14px;
+    padding: 20px 24px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .growth-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 54px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .growth-label { font-size: 13px; color: var(--accent); font-weight: 500; }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin: 24px 0 12px;
+  }
+
+  .comp-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+
+  .comp-q { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 12px; line-height: 1.4; }
+
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .bar-label { font-size: 11px; font-weight: 600; width: 42px; flex-shrink: 0; }
+  .bar-track { flex: 1; height: 10px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .bar-fill-pre { background: var(--purple); }
+  .bar-fill-post { background: var(--accent); }
+  .bar-score { font-size: 12px; font-weight: 600; width: 24px; text-align: right; flex-shrink: 0; }
+
+  .delta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-top: 4px;
+  }
+
+  .delta-up { background: var(--accent-light); color: var(--accent); }
+  .delta-same { background: var(--amber-light); color: var(--amber); }
+  .delta-down { background: var(--warn-light); color: var(--warn); }
+
+  .ref-result-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+
+  .rr-q { font-size: 12px; font-weight: 600; color: var(--ink-light); margin-bottom: 6px; }
+  .rr-a { font-size: 14px; color: var(--ink); line-height: 1.6; white-space: pre-wrap; }
+
+  .result-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--ink);
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 99px;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  .footer-note {
+    margin-top: 36px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--ink-light);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  @media (max-width: 480px) {
+    .scale-btn span.hint { display: none; }
+    .pre-input-row { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WELCOME / PRE-SCORE INPUT -->
+<div class="screen active" id="screen-welcome">
+  <div class="screen-inner">
+    <div class="tag tag-post">Post-Check · After the Course</div>
+    <h1>Well done for completing the course!</h1>
+    <p class="subtitle">Now rate the same 5 statements again — then answer 3 short reflection questions. You'll see a side-by-side comparison of your confidence before and after.</p>
+
+    <div class="pre-score-section">
+      <h3>Your pre-check scores</h3>
+      <p>If you saved your pre-check scores, enter them below so we can show you your growth. If you didn't save them, leave all fields at 0 — the post-check still works on its own.</p>
+      <div class="pre-inputs">
+        <div class="pre-input-row">
+          <span class="pre-q-short">Social challenges vs technical problems</span>
+          <select class="pre-score-select" id="pre0">
+            <option value="0">—</option>
+            <option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div class="pre-input-row">
+          <span class="pre-q-short">What social innovation means</span>
+          <select class="pre-score-select" id="pre1">
+            <option value="0">—</option>
+            <option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div class="pre-input-row">
+          <span class="pre-q-short">Identifying and mapping stakeholders</span>
+          <select class="pre-score-select" id="pre2">
+            <option value="0">—</option>
+            <option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div class="pre-input-row">
+          <span class="pre-q-short">Design thinking and co-creation in practice</span>
+          <select class="pre-score-select" id="pre3">
+            <option value="0">—</option>
+            <option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+        <div class="pre-input-row">
+          <span class="pre-q-short">The Double Diamond model</span>
+          <select class="pre-score-select" id="pre4">
+            <option value="0">—</option>
+            <option value="1">1</option><option value="2">2</option>
+            <option value="3">3</option><option value="4">4</option><option value="5">5</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-accent" onclick="startPost()">Start post-check →</button>
+  </div>
+</div>
+
+<!-- POST QUESTIONS -->
+<div class="screen" id="screen-questions">
+  <div class="screen-inner">
+    <div class="tag tag-post">Post-Check · Statement <span id="q-count">1</span> of 5</div>
+    <h1>After the Course</h1>
+    <p class="subtitle">The same 5 statements — rate your confidence now.</p>
+    <div class="progress-dots" id="progress-dots"></div>
+    <div id="q-area"></div>
+    <div class="nav">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQ()" style="visibility:hidden">← Back</button>
+      <button class="btn btn-accent" id="btn-next" onclick="nextQ()" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- REFLECTION -->
+<div class="screen" id="screen-reflection">
+  <div class="screen-inner">
+    <div class="tag tag-reflect">Final Reflection</div>
+    <h1>Looking Back</h1>
+    <p class="subtitle">Three open questions to close the course. These are for you — take your time.</p>
+
+    <div class="reflection-card">
+      <div class="r-label">🔄 How has your understanding of social innovation changed since you started?</div>
+      <div class="r-hint">What do you see now that you didn't see before?</div>
+      <textarea id="ref1" placeholder="When I started, I thought… Now I understand…"></textarea>
+    </div>
+
+    <div class="reflection-card">
+      <div class="r-label">💡 What was the most surprising or useful idea from the course — and why?</div>
+      <div class="r-hint">A framework, a case study, a question, a moment of realisation</div>
+      <textarea id="ref2" placeholder="The thing that surprised or stuck with me most was…"></textarea>
+    </div>
+
+    <div class="reflection-card">
+      <div class="r-label">🚀 What is one concrete thing you will do differently — or explore further — because of this course?</div>
+      <div class="r-hint">It can be small. What matters is that it's specific and yours.</div>
+      <textarea id="ref3" placeholder="Because of this course, I will…"></textarea>
+    </div>
+
+    <div class="nav" style="justify-content:flex-end;">
+      <button class="btn btn-ink" onclick="showResults()">See my results →</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div class="screen" id="screen-results">
+  <div class="screen-inner">
+    <div class="tag tag-results">Your Results</div>
+    <h1>Here's how you grew</h1>
+    <p class="subtitle">Your confidence before and after the course — question by question.</p>
+
+    <div class="growth-banner">
+      <div class="growth-number" id="avg-growth">+0</div>
+      <div class="growth-label">average confidence gain across all 5 statements</div>
+    </div>
+
+    <div class="section-title">Confidence — before vs after</div>
+    <div id="comparison-list"></div>
+
+    <div class="section-title" id="reflect-title" style="display:none">Your reflections</div>
+    <div id="reflection-display"></div>
+
+    <div class="result-actions">
+      <button class="btn btn-accent" onclick="saveAndExport()">↓ Save my results</button>
+      <button class="btn btn-ghost" onclick="resetAll()">↺ Start over</button>
+    </div>
+
+    <div class="footer-note">
+      Your responses are stored only in this browser session and are never shared.<br>
+      Designing Social Impact · ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Saved</div>
+
+<script>
+  const questions = [
+    'I can explain what a social challenge is and why it is different from a technical problem.',
+    'I understand what social innovation means — and what makes an idea genuinely "social."',
+    'I can identify and map the stakeholders of a social initiative, including those with hidden power.',
+    'I understand what design thinking and co-creation mean in practice — not just as concepts.',
+    'I can describe the Double Diamond model and explain how it helps move from a problem to a solution.'
+  ];
+
+  const reflectionLabels = [
+    'How has your understanding of social innovation changed?',
+    'Most surprising or useful idea — and why?',
+    'One concrete thing you will do differently or explore further'
+  ];
+
+  const postScores = [0, 0, 0, 0, 0];
+  let preScores = [0, 0, 0, 0, 0];
+  let current = 0;
+
+  function startPost() {
+    preScores = [0,1,2,3,4].map(i => parseInt(document.getElementById('pre'+i).value) || 0);
+    current = 0;
+    showScreen('screen-questions');
+    renderQ();
+  }
+
+  function renderQ() {
+    const q = questions[current];
+    const score = postScores[current];
+
+    document.getElementById('q-count').textContent = current + 1;
+
+    document.getElementById('q-area').innerHTML = `
+      <div class="question-card">
+        <div class="q-number">Statement ${current + 1} of ${questions.length}</div>
+        <div class="q-text">${q}</div>
+        <div class="scale-label">Your confidence level now — after the course</div>
+        <div class="scale">
+          ${[1,2,3,4,5].map(n => `
+            <button class="scale-btn ${score===n?'sel-'+n:''}" onclick="selectScore(${n})">
+              ${n}
+              <span class="hint">${n===1?'Not at all':n===5?'Fully':''}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('progress-dots').innerHTML = questions.map((_, i) => {
+      let cls = 'dot';
+      if (i < current) cls += ' done';
+      if (i === current) cls += ' active';
+      return `<div class="${cls}"></div>`;
+    }).join('');
+
+    document.getElementById('btn-prev').style.visibility = current === 0 ? 'hidden' : 'visible';
+    const isLast = current === questions.length - 1;
+    const nextBtn = document.getElementById('btn-next');
+    nextBtn.textContent = isLast ? 'Continue to reflection →' : 'Next →';
+    nextBtn.disabled = score === 0;
+  }
+
+  function selectScore(n) {
+    postScores[current] = n;
+    renderQ();
+  }
+
+  function nextQ() {
+    if (postScores[current] === 0) return;
+    if (current < questions.length - 1) { current++; renderQ(); }
+    else showScreen('screen-reflection');
+  }
+
+  function prevQ() {
+    if (current > 0) { current--; renderQ(); }
+  }
+
+  function showResults() {
+    showScreen('screen-results');
+
+    const totalGrowth = postScores.reduce((s, v, i) => s + (v - preScores[i]), 0);
+    const avg = totalGrowth / questions.length;
+    const avgEl = document.getElementById('avg-growth');
+    const hasPreScores = preScores.some(s => s > 0);
+
+    if (hasPreScores) {
+      avgEl.textContent = (avg >= 0 ? '+' : '') + avg.toFixed(1);
+      avgEl.style.color = avg > 0 ? 'var(--accent)' : avg < 0 ? 'var(--warn)' : 'var(--amber)';
+    } else {
+      avgEl.textContent = '—';
+      avgEl.style.color = 'var(--ink-light)';
+      avgEl.style.fontSize = '32px';
+      avgEl.parentElement.querySelector('.growth-label').textContent = 'Enter your pre-check scores above to see your growth';
+    }
+
+    // Comparison bars
+    document.getElementById('comparison-list').innerHTML = questions.map((q, i) => {
+      const delta = postScores[i] - preScores[i];
+      const cls = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-same';
+      const txt = delta > 0 ? `↑ +${delta}` : delta < 0 ? `↓ ${delta}` : hasPreScores ? '→ No change' : '—';
+
+      return `
+        <div class="comp-row">
+          <div class="comp-q">${q}</div>
+          ${hasPreScores ? `
+          <div class="bar-row">
+            <span class="bar-label" style="color:var(--purple)">Before</span>
+            <div class="bar-track"><div class="bar-fill bar-fill-pre" id="bpre-${i}" style="width:0%"></div></div>
+            <span class="bar-score" style="color:var(--purple)">${preScores[i]}/5</span>
+          </div>` : ''}
+          <div class="bar-row">
+            <span class="bar-label" style="color:var(--accent)">After</span>
+            <div class="bar-track"><div class="bar-fill bar-fill-post" id="bpost-${i}" style="width:0%"></div></div>
+            <span class="bar-score" style="color:var(--accent)">${postScores[i]}/5</span>
+          </div>
+          ${hasPreScores ? `<span class="delta-badge ${cls}">${txt}</span>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    // Animate
+    setTimeout(() => {
+      questions.forEach((_, i) => {
+        if (hasPreScores) {
+          const pre = document.getElementById('bpre-' + i);
+          if (pre) pre.style.width = (preScores[i] / 5 * 100) + '%';
+        }
+        const post = document.getElementById('bpost-' + i);
+        if (post) post.style.width = (postScores[i] / 5 * 100) + '%';
+      });
+    }, 100);
+
+    // Reflections
+    const refs = [
+      { id: 'ref1', label: reflectionLabels[0] },
+      { id: 'ref2', label: reflectionLabels[1] },
+      { id: 'ref3', label: reflectionLabels[2] }
+    ];
+
+    const refHtml = refs.map(r => {
+      const v = document.getElementById(r.id)?.value.trim();
+      if (!v) return '';
+      return `<div class="ref-result-row"><div class="rr-q">${r.label}</div><div class="rr-a">${v.replace(/</g,'&lt;')}</div></div>`;
+    }).filter(Boolean).join('');
+
+    if (refHtml) {
+      document.getElementById('reflect-title').style.display = 'block';
+      document.getElementById('reflection-display').innerHTML = refHtml;
+    }
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function saveAndExport() {
+    const date = new Date().toLocaleDateString('en-GB');
+    const hasPreScores = preScores.some(s => s > 0);
+    const totalGrowth = postScores.reduce((s, v, i) => s + (v - preScores[i]), 0);
+    const avg = totalGrowth / questions.length;
+
+    let compRows = questions.map((q, i) => {
+      const delta = postScores[i] - preScores[i];
+      const sign = delta >= 0 ? '+' : '';
+      return `<div class="comp-row">
+        <div class="comp-q">${q}</div>
+        <div class="scores">
+          ${hasPreScores ? `<span class="score-pre">Before: ${preScores[i]}/5</span>` : ''}
+          <span class="score-post">After: ${postScores[i]}/5</span>
+          ${hasPreScores ? `<span class="delta ${delta>0?'up':delta<0?'down':'same'}">${sign}${delta}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+
+    let refRows = ['ref1','ref2','ref3'].map((id, idx) => {
+      const v = document.getElementById(id)?.value.trim();
+      if (!v) return '';
+      return `<div class="ref-row"><div class="ref-q">${reflectionLabels[idx]}</div><div class="ref-a">${v.replace(/</g,'&lt;')}</div></div>`;
+    }).filter(Boolean).join('');
+
+    const growthHtml = hasPreScores
+      ? `<div class="growth"><div class="growth-num">${avg>=0?'+':''}${avg.toFixed(1)}</div><div class="growth-label">average confidence gain per statement</div></div>`
+      : '';
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Post-Check Results</title>
+<style>
+body{font-family:Georgia,serif;max-width:680px;margin:40px auto;padding:0 20px;color:#1a1a1a;line-height:1.7}
+h1{font-size:22px;margin-bottom:4px}.meta{color:#888;font-size:13px;margin-bottom:28px}
+.growth{background:#D8F3DC;border-radius:10px;padding:20px;text-align:center;margin-bottom:28px}
+.growth-num{font-size:52px;font-weight:bold;color:#2D6A4F;line-height:1}
+.growth-label{font-size:13px;color:#2D6A4F;margin-top:4px}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.08em;color:#2D6A4F;margin:24px 0 12px;border-top:1px solid #eee;padding-top:14px}
+.comp-row{background:#f9f9f9;border-radius:8px;padding:14px;margin-bottom:10px}
+.comp-q{font-size:14px;font-weight:500;margin-bottom:8px}
+.scores{display:flex;gap:12px;align-items:center;font-size:13px;flex-wrap:wrap}
+.score-pre{color:#5C4B8A;font-weight:600}
+.score-post{color:#2D6A4F;font-weight:600}
+.delta{font-weight:700;padding:2px 8px;border-radius:99px;font-size:12px}
+.up{background:#D8F3DC;color:#2D6A4F}.same{background:#FFF3CD;color:#D4870A}.down{background:#FDE8E3;color:#E07A5F}
+.ref-row{background:#f9f9f9;border-radius:8px;padding:14px;margin-bottom:10px}
+.ref-q{font-size:12px;font-weight:bold;color:#6B6560;margin-bottom:6px}
+.ref-a{font-size:14px;color:#1a1a1a;white-space:pre-wrap}
+.quote{font-style:italic;color:#5C4B8A;border-left:3px solid #5C4B8A;padding-left:14px;margin:24px 0;font-size:14px}
+.footer{margin-top:48px;padding-top:16px;border-top:1px solid #eee;font-size:12px;color:#aaa}
+@media print{body{margin:20px}}
+</style></head><body>
+<h1>Post-Check Results</h1>
+<div class="meta">Designing Social Impact · ERUA Social Entrepreneurship e-Course · ${date}</div>
+${growthHtml}
+<h2>Confidence — before vs after</h2>${compRows}
+${refRows ? `<h2>Your reflections</h2>${refRows}` : ''}
+<div class="quote">"Social innovation is not about changing everything overnight. It starts with curiosity, a question, and the courage to try something new — with others."</div>
+<div class="footer">ERUA Social Entrepreneurship e-Course · Prepared by Mariam Umar Farooq, ERUA WP6</div>
+</body></html>`;
+
+    let opened = false;
+    try { const b = new Blob([html],{type:'text/html'}); const u = URL.createObjectURL(b); const w = window.open(u,'_blank'); if(w){opened=true;setTimeout(()=>URL.revokeObjectURL(u),3000);} } catch(e) {}
+    if (!opened) { try { const w = window.open('data:text/html;charset=utf-8,'+encodeURIComponent(html),'_blank'); if(w) opened=true; } catch(e){} }
+    if (opened) { showToast('✓ Opened in new tab — print or save as PDF'); return; }
+
+    // Fallback overlay
+    const existing = document.getElementById('answerOverlay'); if(existing) existing.remove();
+    let text = `POST-CHECK RESULTS\n${date}\n\n`;
+    questions.forEach((q,i) => {
+      text += `${q}\n`;
+      if(hasPreScores) text += `  Before: ${preScores[i]}/5\n`;
+      text += `  After: ${postScores[i]}/5\n\n`;
+    });
+    ['ref1','ref2','ref3'].forEach((id,idx)=>{ const v=document.getElementById(id)?.value.trim(); if(v) text+=`${reflectionLabels[idx]}:\n${v}\n\n`; });
+    const ov=document.createElement('div'); ov.id='answerOverlay';
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px';
+    const bx=document.createElement('div'); bx.style.cssText='background:white;border-radius:12px;padding:24px;max-width:600px;width:100%;max-height:80vh;overflow-y:auto';
+    bx.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><strong>Your results</strong><button onclick="document.getElementById('answerOverlay').remove()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#888">✕</button></div><textarea readonly style="width:100%;height:300px;font-family:monospace;font-size:12px;border:1px solid #ddd;border-radius:8px;padding:10px;resize:none">${text}</textarea><button onclick="const ta=document.querySelector('#answerOverlay textarea');ta.select();navigator.clipboard?.writeText(ta.value).catch(()=>document.execCommand('copy'));showToast('✓ Copied')" style="margin-top:10px;background:#2D6A4F;color:white;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Copy to clipboard</button>`;
+    ov.appendChild(bx); document.body.appendChild(ov); showToast('✓ Ready to copy');
+  }
+
+  function resetAll() {
+    if(!confirm('Reset all responses?')) return;
+    postScores.fill(0); preScores.fill(0); current = 0;
+    [0,1,2,3,4].forEach(i=>{ const el=document.getElementById('pre'+i); if(el) el.value='0'; });
+    ['ref1','ref2','ref3'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    showScreen('screen-welcome');
+  }
+</script>
+</body>
+</html>
